@@ -13,7 +13,7 @@ class InvalidState(Exception):
     def __init__(
         self, cursor: int, state: State, message: str = "Invalid state"
     ) -> None:
-        super().__init__(f"{cursor}: {message} {state}")
+        super().__init__(f"{cursor = }: {message = } {state = }")
 
 
 @dataclass
@@ -33,15 +33,14 @@ def parse_block(
         raise InvalidState(cursor, state, "Invalid state")
 
     offset: int
-    block: Block
+    block: Block = Block()
     for offset in range(cursor, len(buffer)):
         ch: str = buffer[offset]
         if ch == "[":
             if state == State.out:
                 state = State.in_
-                block = Block()
             elif state == State.in_:
-                block.children.append(parse_block(buffer, offset + 1))
+                block.children.append(parse_block(buffer, offset + 1, state=State.in_))
             else:
                 make_error()
         elif ch == "]":
