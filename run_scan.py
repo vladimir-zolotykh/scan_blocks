@@ -6,9 +6,14 @@ from dataclasses import dataclass, field
 from enum import Enum
 import pprint
 
+State = Enum("State", ["start", "in_", "out", "end"])
 
-class InvalidState(TypeError):
-    pass
+
+class InvalidState(Exception):
+    def __init__(
+        self, cursor: int, state: State, message: str = "Invalid state"
+    ) -> None:
+        super().__init__(f"{cursor}: {message} {state}")
 
 
 @dataclass
@@ -19,14 +24,14 @@ class Block:
     children: list[Block] = field(default_factory=list)
 
 
-State = Enum("State", ["start", "in_", "out", "end"])
-
-
 def parse_block(
     buffer: str,
     cursor: int = 0,
     state: State = State.out,
 ) -> Block:
+    def make_error() -> None:
+        raise InvalidState(cursor, state, "Invalid state")
+
     offset: int
     block: Block
     for offset in range(cursor, len(buffer)):
@@ -38,17 +43,17 @@ def parse_block(
             elif state == State.in_:
                 block.children.append(parse_block(buffer, offset + 1))
             else:
-                raise InvalidState()
+                make_error()
         elif ch == "]":
             if state == State.in_:
                 return block
             else:
-                raise InvalidState()
+                make_error()
         else:
             if state == State.in_:
                 block.body.append(ch)
             else:
-                raise InvalidState()
+                make_error()
     return block
 
 
