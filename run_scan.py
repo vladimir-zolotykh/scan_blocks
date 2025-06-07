@@ -70,7 +70,7 @@ parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 )
 if __name__ == "__main__":
-    parser.add_argument("file-to-parse", choices=glob.glob("*.blk"))
+    parser.add_argument("file_to_parse", choices=glob.glob("*.blk"))
     argcomplete.autocomplete(parser)
     args = parser.parse_args()
     found_blk_files: list[str] = []
