@@ -4,7 +4,9 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
-import pprint
+import glob
+import argparse
+import argcomplete
 
 State = Enum("State", ["start", "in_", "out", "end"])
 
@@ -24,31 +26,34 @@ class Block:
     children: list[Block] = field(default_factory=list)
 
     def __repr__(self):
-        return f"Block(body={''.join(self.body)}, children=({self.children}))"
+        return f"Block(body=\"{''.join(self.body)}\", children=({self.children}))"
 
 
 def parse_block(
     buffer: str,
     cursor: int = 0,
     state: State = State.out,
-) -> Block:
+) -> tuple[Block, int]:
     def make_error() -> None:
         raise InvalidState(cursor, state, "Invalid state")
 
-    offset: int
+    offset: int = cursor
     block: Block = Block()
-    for offset in range(cursor, len(buffer)):
+    while offset < len(buffer):
         ch: str = buffer[offset]
         if ch == "[":
             if state == State.out:
                 state = State.in_
             elif state == State.in_:
-                block.children.append(parse_block(buffer, offset + 1, state=State.in_))
+                _block: Block
+                _block, _offset = parse_block(buffer, offset + 1, state=State.in_)
+                offset = _offset
+                block.children.append(_block)
             else:
                 make_error()
         elif ch == "]":
             if state == State.in_:
-                return block
+                return block, offset
             else:
                 make_error()
         else:
@@ -56,14 +61,23 @@ def parse_block(
                 block.body.append(ch)
             else:
                 make_error()
-    return block
+        offset += 1
+    return block, offset
 
 
+parser = argparse.ArgumentParser(
+    description="Parse .blk file",
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+)
 if __name__ == "__main__":
-    with open("message.blk") as input:
+    parser.add_argument("file-to-parse", choices=glob.glob("*.blk"))
+    argcomplete.autocomplete(parser)
+    args = parser.parse_args()
+    found_blk_files: list[str] = []
+    with open(args.file_to_parse) as input:
         # type(input):   <class '_io.TextIOWrapper'>
         buffer: str = input.read()
         block: Block
-        block = parse_block(buffer)
+        block, _ = parse_block(buffer)
         print(repr(block))
         # pprint.pprint(f"{block = }")
