@@ -23,6 +23,9 @@ class Block:
     body: list[str] = field(default_factory=list)
     children: list[Block] = field(default_factory=list)
 
+    def __repr__(self):
+        return f"Block(body={''.join(self.body)}, children=({self.children}))"
+
 
 def parse_block(
     buffer: str,
@@ -62,4 +65,5 @@ if __name__ == "__main__":
         buffer: str = input.read()
         block: Block
         block = parse_block(buffer)
-        pprint.pprint(f"{block = }")
+        print(repr(block))
+        # pprint.pprint(f"{block = }")
