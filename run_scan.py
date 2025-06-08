@@ -7,6 +7,7 @@ from enum import Enum
 import glob
 import argparse
 import argcomplete
+import io
 
 State = Enum("State", ["start", "in_", "out", "end"])
 
@@ -26,7 +27,12 @@ class Block:
     children: list[Block] = field(default_factory=list)
 
     def __repr__(self):
-        return f"Block(body=\"{''.join(self.body)}\", children=({self.children}))"
+        body_str = "".join(self.body)
+        result = f'Block(body="{body_str}"'
+        if self.children:
+            result += f", children={self.children}"
+        result += ")"
+        return result
 
 
 def parse_block(
