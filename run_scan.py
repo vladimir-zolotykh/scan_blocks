@@ -31,9 +31,16 @@ body_re = re.compile(
 
 
 @dataclass
+class Cell:
+    row: int = 0
+    column: int = 0
+
+
+@dataclass
 class Block:
     color: str = ""
     text: str = ""
+    cell: Cell = field(default_factory=Cell)
     _body: list[str] = field(default_factory=list)
     children: list[Block] = field(default_factory=list)
 
