@@ -7,7 +7,6 @@ from enum import Enum
 import glob
 import argparse
 import argcomplete
-import io
 import re
 
 State = Enum("State", ["start", "in_", "out", "end"])
@@ -35,8 +34,16 @@ body_re = re.compile(
 class Block:
     color: str = ""
     text: str = ""
-    body: list[str] = field(default_factory=list)
+    _body: list[str] = field(default_factory=list)
     children: list[Block] = field(default_factory=list)
+
+    @property
+    def body(self) -> str:
+        return self._body
+
+    @body.setter
+    def body(self, new_value: str) -> None:
+        self._body = new_value
 
     def _parse_color_text(self) -> tuple[str, str]:
         pass
@@ -44,7 +51,7 @@ class Block:
     def __repr__(self):
         result = "Block("
         if self.body:
-            body_str = "".join(self.body)
+            body_str = "".join(self._body)
             match = body_re.match(body_str)
             if match:
                 color, text = match.groups()
