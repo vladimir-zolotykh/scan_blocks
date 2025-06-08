@@ -8,6 +8,7 @@ import glob
 import argparse
 import argcomplete
 import io
+import re
 
 State = Enum("State", ["start", "in_", "out", "end"])
 
@@ -19,19 +20,39 @@ class InvalidState(Exception):
         super().__init__(f"{cursor = }: {message = } {state = }")
 
 
+body_re = re.compile(
+    r"""
+\s*
+(?P<color>\#[\dA-Fa-f]{6}|[a-zA-Z]\w*):
+\s*
+(?P<text>\w+)
+\s*""",
+    re.VERBOSE | re.MULTILINE | re.DOTALL,
+)
+
+
 @dataclass
 class Block:
-    # color: str
-    # text: str
+    color: str = ""
+    text: str = ""
     body: list[str] = field(default_factory=list)
     children: list[Block] = field(default_factory=list)
 
+    def _parse_color_text(self) -> tuple[str, str]:
+        pass
+
     def __repr__(self):
-        body_str = "".join(self.body)
-        # result = f'Block(body="{body_str}"'
         result = "Block("
         if self.body:
-            result += f'body="{body_str}"'
+            body_str = "".join(self.body)
+            match = body_re.match(body_str)
+            if match:
+                color, text = match.groups()
+                result += f"color={color}"
+                if text:
+                    result += f", text={text}"
+            else:
+                result += f"body={body_str}"
         if self.children:
             result += f", children={self.children}"
         result += ")"
