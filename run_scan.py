@@ -45,21 +45,23 @@ class Block:
     children: list[Block] = field(default_factory=list)
 
     @property
-    def body(self) -> list[str]:
-        return self._body
+    def body_str(self) -> str:
+        return "".join(self._body)
+
+    def append_ch(self, ch: str) -> None:
+        self._body.append(ch)
 
     def __repr__(self):
         result = "Block("
-        if self.body:
-            body_str = "".join(self._body)
-            match = body_re.match(body_str)
+        if self._body:
+            match = body_re.match(self.body_str)
             if match:
                 color, text = match.groups()
                 result += f"color={color}"
                 if text:
                     result += f", text={text}"
             else:
-                result += f"body={body_str}"
+                result += f"body={self.body_str}"
         if self.children:
             result += f", children={self.children}"
         result += ")"
@@ -95,7 +97,7 @@ def parse_block(
                 make_error()
         else:
             if state == State.in_:
-                block.body.append(ch)
+                block.append_ch(ch)
             else:
                 make_error()
         offset += 1
