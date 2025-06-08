@@ -38,15 +38,8 @@ class Block:
     children: list[Block] = field(default_factory=list)
 
     @property
-    def body(self) -> str:
+    def body(self) -> list[str]:
         return self._body
-
-    @body.setter
-    def body(self, new_value: str) -> None:
-        self._body = new_value
-
-    def _parse_color_text(self) -> tuple[str, str]:
-        pass
 
     def __repr__(self):
         result = "Block("
