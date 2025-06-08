@@ -28,7 +28,10 @@ class Block:
 
     def __repr__(self):
         body_str = "".join(self.body)
-        result = f'Block(body="{body_str}"'
+        # result = f'Block(body="{body_str}"'
+        result = "Block("
+        if self.body:
+            result += f'body="{body_str}"'
         if self.children:
             result += f", children={self.children}"
         result += ")"
