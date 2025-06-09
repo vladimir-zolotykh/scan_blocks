@@ -78,7 +78,11 @@ def parse_block(
     cursor: int = 0,
     cell: Cell = Cell(0, 0),
     state: State = State.out,
-) -> tuple[Block, int]:
+) -> tuple[Block, int, Cell]:
+    """Parse block ([])
+
+    returns Block, input buffer offset, Cell (row, column pointer)"""
+
     def make_error() -> None:
         raise InvalidState(cursor, state, "Invalid state")
 
@@ -92,22 +96,29 @@ def parse_block(
                 state = State.in_
             elif state == State.in_:
                 _block: Block
-                _block, _offset = parse_block(buffer, offset + 1, cell, state=State.in_)
+                _block, _offset, _cell = parse_block(
+                    buffer,
+                    offset + 1,
+                    Cell(cell.row, cell.column + 1),
+                    state=State.in_,
+                )
+                cell = _cell
                 offset = _offset
                 block.children.append(_block)
             else:
                 make_error()
         elif ch == "]":
             if state == State.in_:
-                cell.column += 1
-                return block, offset
+                block.cell = cell
+                return block, offset, cell
             else:
                 make_error()
         elif ch == "/":
             if new_line_state == State.void:
+                # remember the state before entring `new_line' state
                 new_line_state = state
             if state == State.new_line:
-                # eat second "/"
+                # restor the state befor `new_line'
                 if new_line_state != State.void:
                     state = new_line_state
                     new_line_state = State.void
@@ -122,7 +133,8 @@ def parse_block(
             else:
                 make_error()
         offset += 1
-    return block, offset
+    print(f"*** {block.cell = }, {cell = }")
+    return block, offset, cell
 
 
 parser = argparse.ArgumentParser(
@@ -138,6 +150,6 @@ if __name__ == "__main__":
         # type(input):   <class '_io.TextIOWrapper'>
         buffer: str = input.read()
         block: Block
-        block, _ = parse_block(buffer)
+        block, _, _ = parse_block(buffer, 0, Cell(0, 0))
         print(repr(block))
         # pprint.pprint(f"{block = }")
