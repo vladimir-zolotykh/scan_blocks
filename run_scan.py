@@ -9,7 +9,7 @@ import argparse
 import argcomplete
 import re
 
-State = Enum("State", ["start", "in_", "out", "end"])
+State = Enum("State", ["void", "in_", "out", "new_line"])
 
 
 class InvalidState(Exception):
@@ -35,6 +35,9 @@ class Cell:
     row: int = 0
     column: int = 0
 
+    def __repr__(self) -> str:
+        return f"Cell({self.row}, {self.column})"
+
 
 @dataclass
 class Block:
@@ -53,7 +56,9 @@ class Block:
 
     def __repr__(self):
         result = "Block("
+        result += repr(self.cell)
         if self._body:
+            result += ", "
             match = body_re.match(self.body_str)
             if match:
                 color, text = match.groups()
@@ -71,6 +76,7 @@ class Block:
 def parse_block(
     buffer: str,
     cursor: int = 0,
+    cell: Cell = Cell(0, 0),
     state: State = State.out,
 ) -> tuple[Block, int]:
     def make_error() -> None:
@@ -78,6 +84,7 @@ def parse_block(
 
     offset: int = cursor
     block: Block = Block()
+    new_line_state: State = State.void
     while offset < len(buffer):
         ch: str = buffer[offset]
         if ch == "[":
@@ -85,16 +92,30 @@ def parse_block(
                 state = State.in_
             elif state == State.in_:
                 _block: Block
-                _block, _offset = parse_block(buffer, offset + 1, state=State.in_)
+                _block, _offset = parse_block(buffer, offset + 1, cell, state=State.in_)
                 offset = _offset
                 block.children.append(_block)
             else:
                 make_error()
         elif ch == "]":
             if state == State.in_:
+                cell.column += 1
                 return block, offset
             else:
                 make_error()
+        elif ch == "/":
+            if new_line_state == State.void:
+                new_line_state = state
+            if state == State.new_line:
+                # eat second "/"
+                if new_line_state != State.void:
+                    state = new_line_state
+                    new_line_state = State.void
+                else:
+                    state = State.out
+            else:
+                state = State.new_line
+                cell.row += 1
         else:
             if state == State.in_:
                 block.append_ch(ch)
