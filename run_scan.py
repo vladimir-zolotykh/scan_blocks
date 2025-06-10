@@ -117,7 +117,6 @@ def parse_block(
                 make_error()
         elif ch == "]":
             if state == State.in_:
-                # block.cell = cell
                 return block, offset, cell
             else:
                 make_error()
@@ -135,7 +134,7 @@ def parse_block(
                 make_error()
         offset += 1
     # We never reach the following return statement
-    make_error()
+    assert True, "Can't happen"
     return block, offset, cell
 
 
