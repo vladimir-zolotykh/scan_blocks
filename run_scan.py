@@ -8,6 +8,7 @@ import glob
 import argparse
 import argcomplete
 import re
+import copy
 
 State = Enum("State", ["void", "in_", "out", "new_line"])
 
@@ -34,6 +35,12 @@ body_re = re.compile(
 class Cell:
     row: int = 0
     column: int = 0
+
+    def next_row(self) -> Cell:
+        return Cell(self.row + 1, self.column)
+
+    def next_column(self) -> Cell:
+        return Cell(self.row, self.column + 1)
 
     def __repr__(self) -> str:
         return f"Cell({self.row}, {self.column})"
@@ -87,7 +94,8 @@ def parse_block(
         raise InvalidState(cursor, state, "Invalid state")
 
     offset: int = cursor
-    block: Block = Block()
+    block: Block = Block(cell=cell)
+    global_cell = copy.deepcopy(cell)
     while offset < len(buffer):
         ch: str = buffer[offset]
         if ch == "[":
@@ -95,10 +103,11 @@ def parse_block(
                 state = State.in_
             elif state == State.in_:
                 _block: Block
-                _block, offset, cell = parse_block(
+                _block, offset, global_cell = parse_block(
                     buffer,
                     offset + 1,
-                    Cell(cell.row, cell.column + 1),
+                    cell.next_row(),
+                    # Cell(cell.row, cell.column + 1),
                     state=State.in_,
                 )
                 block.children.append(_block)
@@ -106,7 +115,7 @@ def parse_block(
                 make_error()
         elif ch == "]":
             if state == State.in_:
-                block.cell = cell
+                # block.cell = cell
                 return block, offset, cell
             else:
                 make_error()
@@ -124,6 +133,7 @@ def parse_block(
                 make_error()
         offset += 1
     # We never reach the following return statement
+    make_error()
     return block, offset, cell
 
 
