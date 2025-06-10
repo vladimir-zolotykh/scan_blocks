@@ -96,14 +96,12 @@ def parse_block(
                 state = State.in_
             elif state == State.in_:
                 _block: Block
-                _block, _offset, _cell = parse_block(
+                _block, offset, cell = parse_block(
                     buffer,
                     offset + 1,
                     Cell(cell.row, cell.column + 1),
                     state=State.in_,
                 )
-                cell = _cell
-                offset = _offset
                 block.children.append(_block)
             else:
                 make_error()
@@ -150,6 +148,6 @@ if __name__ == "__main__":
         # type(input):   <class '_io.TextIOWrapper'>
         buffer: str = input.read()
         block: Block
-        block, _, _ = parse_block(buffer, 0, Cell(0, 0))
+        block = parse_block(buffer, 0, Cell(0, 0))[0]
         print(repr(block))
         # pprint.pprint(f"{block = }")
