@@ -36,6 +36,9 @@ class Cell:
     row: int = 0
     column: int = 0
 
+    def dup(self) -> Cell:
+        return Cell(self.row, self.column)
+
     def next_row(self) -> Cell:
         return Cell(self.row + 1, self.column)
 
@@ -94,8 +97,8 @@ def parse_block(
         raise InvalidState(cursor, state, "Invalid state")
 
     offset: int = cursor
-    block: Block = Block(cell=cell)
-    global_cell = copy.deepcopy(cell)
+    block: Block = Block(cell=cell.dup())
+    global_cell = cell.dup()
     while offset < len(buffer):
         ch: str = buffer[offset]
         if ch == "[":
@@ -107,7 +110,6 @@ def parse_block(
                     buffer,
                     offset + 1,
                     cell.next_row(),
-                    # Cell(cell.row, cell.column + 1),
                     state=State.in_,
                 )
                 block.children.append(_block)
