@@ -88,7 +88,7 @@ def parse_block(
 
     offset: int = cursor
     block: Block = Block()
-    new_line_state: State = State.void
+    state_before_new_line: State = State.void
     while offset < len(buffer):
         ch: str = buffer[offset]
         if ch == "[":
@@ -114,14 +114,14 @@ def parse_block(
             else:
                 make_error()
         elif ch == "/":
-            if new_line_state == State.void:
+            if state_before_new_line == State.void:
                 # remember the state before entring `new_line' state
-                new_line_state = state
+                state_before_new_line = state
             if state == State.new_line:
                 # restor the state befor `new_line'
-                if new_line_state != State.void:
-                    state = new_line_state
-                    new_line_state = State.void
+                if state_before_new_line != State.void:
+                    state = state_before_new_line
+                    state_before_new_line = State.void
                 else:
                     state = State.out
             else:
@@ -133,7 +133,7 @@ def parse_block(
             else:
                 make_error()
         offset += 1
-    print(f"*** {block.cell = }, {cell = }")
+    # We never reach the following return statement
     return block, offset, cell
 
 
