@@ -88,7 +88,7 @@ def parse_block(
     cursor: int = 0,
     cell: Cell = Cell(0, 0),
     state: State = State.out,
-) -> tuple[Block, int, Cell]:
+) -> tuple[Block, int]:
     """Parse block ([])
 
     returns Block, input buffer offset, Cell (row, column pointer)"""
@@ -110,13 +110,13 @@ def parse_block(
                     offset + 1,
                     cell.next_row(),
                     state=State.in_,
-                )[:2]
+                )
                 block.children.append(_block)
             else:
                 make_error()
         elif ch == "]":
             if state == State.in_:
-                return block, offset, cell
+                return block, offset
             else:
                 make_error()
         elif ch == "/":
@@ -134,7 +134,7 @@ def parse_block(
         offset += 1
     # We never reach the following return statement
     assert True, "Can't happen"
-    return block, offset, cell
+    return block, offset
 
 
 parser = argparse.ArgumentParser(
