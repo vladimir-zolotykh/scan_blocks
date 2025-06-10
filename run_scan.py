@@ -98,7 +98,6 @@ def parse_block(
 
     offset: int = cursor
     block: Block = Block(cell=cell.dup())
-    global_cell = cell.dup()
     while offset < len(buffer):
         ch: str = buffer[offset]
         if ch == "[":
@@ -106,12 +105,12 @@ def parse_block(
                 state = State.in_
             elif state == State.in_:
                 _block: Block
-                _block, offset, global_cell = parse_block(
+                _block, offset = parse_block(
                     buffer,
                     offset + 1,
                     cell.next_row(),
                     state=State.in_,
-                )
+                )[:2]
                 block.children.append(_block)
             else:
                 make_error()
