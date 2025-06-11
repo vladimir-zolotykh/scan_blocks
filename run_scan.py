@@ -108,7 +108,7 @@ def parse_block(
                 _block, offset = parse_block(
                     buffer,
                     offset + 1,
-                    cell.next_row(),
+                    cell,
                     state=State.in_,
                 )
                 block.children.append(_block)
