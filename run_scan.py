@@ -129,6 +129,10 @@ def parse_block(
                 state = State.new_line
                 cell.row += 1
                 cell.column = 0
+        elif ch == "\n":
+            # "/" instead of "//"
+            if state == State.new_line:
+                state = State.in_
         else:
             if state == State.in_:
                 block.append_ch(ch)
