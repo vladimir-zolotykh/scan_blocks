@@ -8,7 +8,7 @@ import glob
 import argparse
 import argcomplete
 import re
-import copy
+import pprint
 
 State = Enum("State", ["void", "in_", "out", "new_line"])
 
@@ -111,6 +111,7 @@ def parse_block(
                     cell,
                     state=State.in_,
                 )
+                cell.column += 1
                 block.children.append(_block)
             else:
                 make_error()
@@ -126,6 +127,7 @@ def parse_block(
             else:
                 state = State.new_line
                 cell.row += 1
+                cell.column = 0
         else:
             if state == State.in_:
                 block.append_ch(ch)
@@ -151,5 +153,4 @@ if __name__ == "__main__":
         buffer: str = input.read()
         block: Block
         block = parse_block(buffer, 0, Cell(0, 0))[0]
-        print(repr(block))
-        # pprint.pprint(f"{block = }")
+        pprint.pprint(repr(block))
