@@ -88,6 +88,7 @@ def parse_block(
     cursor: int = 0,
     cell: Cell = Cell(0, 0),
     state: State = State.out,
+    depth: int = 0,
 ) -> tuple[Block, int]:
     """Parse block ([])
 
@@ -106,10 +107,7 @@ def parse_block(
             elif state == State.in_:
                 _block: Block
                 _block, offset = parse_block(
-                    buffer,
-                    offset + 1,
-                    cell,
-                    state=State.in_,
+                    buffer, offset + 1, cell, state=State.in_, depth=depth + 1
                 )
                 cell.column += 1
                 block.children.append(_block)
@@ -117,7 +115,10 @@ def parse_block(
                 make_error()
         elif ch == "]":
             if state == State.in_:
-                return block, offset
+                if 0 < depth:
+                    return block, offset
+                else:
+                    pass  # continue paring
             else:
                 make_error()
         elif ch == "/":
@@ -134,8 +135,6 @@ def parse_block(
             else:
                 make_error()
         offset += 1
-    # We never reach the following return statement
-    assert True, "Can't happen"
     return block, offset
 
 
