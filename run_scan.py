@@ -3,21 +3,13 @@
 # PYTHON_ARGCOMPLETE_OK
 from __future__ import annotations
 from dataclasses import dataclass, field
-from enum import Enum
 import glob
 import argparse
 import argcomplete
 import re
 import pprint
-
-State = Enum("State", ["void", "in_", "out", "new_line"])
-
-
-class InvalidState(Exception):
-    def __init__(
-        self, cursor: int, state: State, message: str = "Invalid state"
-    ) -> None:
-        super().__init__(f"{cursor = }: {message = } {state = }")
+import logging
+import parse_util as PS
 
 
 body_re = re.compile(
@@ -87,57 +79,57 @@ def parse_block(
     buffer: str,
     cursor: int = 0,
     cell: Cell = Cell(0, 0),
-    state: State = State.out,
+    state: PS.State = PS.State.out,
     depth: int = 0,
 ) -> tuple[Block, int]:
     """Parse block ([])
 
     returns Block, input buffer offset, Cell (row, column pointer)"""
-
-    def make_error() -> None:
-        raise InvalidState(cursor, state, "Invalid state")
-
     offset: int = cursor
     block: Block = Block(cell=cell.dup())
+    ps: PS.ParserState(buffer, offset, state)
     while offset < len(buffer):
         ch: str = buffer[offset]
         if ch == "[":
-            if state == State.out:
-                state = State.in_
-            elif state == State.in_:
+            if state == PS.State.out:
+                state = PS.State.in_
+            elif state == PS.State.in_:
                 _block: Block
                 _block, offset = parse_block(
-                    buffer, offset + 1, cell, state=State.in_, depth=depth + 1
+                    buffer, offset + 1, cell, state=PS.State.in_, depth=depth + 1
                 )
                 cell.column += 1
                 block.children.append(_block)
             else:
-                make_error()
+                PS.make_error()
         elif ch == "]":
-            if state == State.in_:
+            if state == PS.State.in_:
                 if 0 < depth:
                     return block, offset
                 else:
                     pass  # continue paring
             else:
-                make_error()
+                PS.make_error()
         elif ch == "/":
-            if state == State.new_line:
+            if state == PS.State.new_line:
                 # eat second "/"
-                state = State.in_
+                state = PS.State.in_
             else:
-                state = State.new_line
+                state = PS.State.new_line
                 cell.row += 1
                 cell.column = 0
         elif ch == "\n":
             # "/" instead of "//"
-            if state == State.new_line:
-                state = State.in_
+            if state == PS.State.new_line:
+                state = PS.State.in_
+            else:
+                ps.log_current_line()
+                cell.row += 1
         else:
-            if state == State.in_:
+            if state == PS.State.in_:
                 block.append_ch(ch)
             else:
-                make_error()
+                PS.make_error()
         offset += 1
     return block, offset
 
@@ -147,6 +139,7 @@ parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 )
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
     parser.add_argument("file_to_parse", choices=glob.glob("*.blk"))
     argcomplete.autocomplete(parser)
     args = parser.parse_args()
