@@ -10,6 +10,8 @@ ParserState(buffer=None, offset=None, state=None)
 ...
 >>> lightgray_str
 '[lightgray: Frame\\n    [] [White: Message text]\\n    //\\n    [goldenrod: OK Button] [] [#ff0505: Cancel Button]\\n    /\\n    []\\n]\\n'
+>>> find_line_boundaries(lightgray_str)
+{1: (0, 17), 2: (17, 29), 3: (46, 7), 4: (53, 55), 5: (108, 6), 6: (114, 7), 7: (121, 2), 8: (123, 1)}
 >>>
 """
 
@@ -42,6 +44,24 @@ class ParserState:
 
     def log_current_line(self) -> None:
         logging.info(f"{self.buffer = }, {self.offset = }, {self.state = }")
+
+
+def find_line_boundaries(buffer: str) -> dict[int, tuple[int, int]]:
+    """Return a mapping of char postion to line number"""
+
+    line_no: int = 1
+    line_start: int = 0
+    line_len: int = 0
+    lines: dict[int, tuple[int, int]] = {}
+    for char_no in range(len(buffer)):
+        if buffer[char_no] == "\n":
+            lines[line_no] = (line_start, line_len)
+            line_no += 1
+            line_start = char_no
+            line_len = 0
+        line_len += 1
+    lines[line_no] = (line_start, line_len)
+    return lines
 
 
 if __name__ == "__main__":
