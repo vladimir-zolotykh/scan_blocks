@@ -64,6 +64,16 @@ def find_line_boundaries(buffer: str) -> dict[int, tuple[int, int]]:
     return lines
 
 
+def which_line(char_no: int, lines: dict[int, tuple[int, int]]) -> int:
+    """Return the line that has CHAR_NO"""
+
+    for line_no in lines:
+        val = lines[line_no]
+        if char_no in range(val[0], val[0] + val[1]):
+            return line_no
+    return -1  # not found
+
+
 if __name__ == "__main__":
     import doctest
 
