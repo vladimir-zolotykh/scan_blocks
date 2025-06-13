@@ -12,9 +12,13 @@ ParserState(buffer=None, offset=None, state=None)
 '[lightgray: Frame\\n    [] [White: Message text]\\n    //\\n    [goldenrod: OK Button] [] [#ff0505: Cancel Button]\\n    /\\n    []\\n]\\n'
 >>> lines = find_line_boundaries(lightgray_str)
 >>> lines
-{1: (0, 17), 2: (17, 29), 3: (46, 7), 4: (53, 55), 5: (108, 6), 6: (114, 7), 7: (121, 2), 8: (123, 1)}
+{1: (0, 18), 2: (18, 29), 3: (47, 7), 4: (54, 55), 5: (109, 6), 6: (115, 7), 7: (122, 2)}
 >>> which_line(47, lines)
 3
+>>> which_line(10, lines)
+1
+>>> which_line(17, lines)
+1
 """
 
 from typing import Optional
@@ -56,13 +60,12 @@ def find_line_boundaries(buffer: str) -> dict[int, tuple[int, int]]:
     line_len: int = 0
     lines: dict[int, tuple[int, int]] = {}
     for char_no in range(len(buffer)):
+        line_len += 1  # "\n" is last char of any line
         if buffer[char_no] == "\n":
             lines[line_no] = (line_start, line_len)
             line_no += 1
-            line_start = char_no
+            line_start = char_no + 1
             line_len = 0
-        line_len += 1
-    lines[line_no] = (line_start, line_len)
     return lines
 
 
