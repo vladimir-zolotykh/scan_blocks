@@ -4,7 +4,7 @@
 """
 >>> ps = ParserState()
 >>> ps
-ParserState(buffer=None, offset=None, state=None)
+ParserState(buffer='', offset=0, state=<State.void: 1>)
 >>> with open("lightgray.blk") as f:
 ...     lightgray_str = f.read()
 ...
@@ -38,9 +38,9 @@ class InvalidState(Exception):
 
 @dataclass
 class ParserState:
-    buffer: Optional[str] = None
-    offset: Optional[int] = None
-    state: Optional[State] = None
+    buffer: str = ""
+    offset: int = 0
+    state: State = State.void
 
     def make_error(self) -> None:
         raise InvalidState(self.offset, self.state, "Invalid state")

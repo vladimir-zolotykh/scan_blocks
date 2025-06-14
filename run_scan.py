@@ -9,7 +9,7 @@ import argcomplete
 import re
 import pprint
 import logging
-import parse_util as PS
+import parser_state as PS
 
 
 body_re = re.compile(
@@ -87,7 +87,7 @@ def parse_block(
     returns Block, input buffer offset, Cell (row, column pointer)"""
     offset: int = cursor
     block: Block = Block(cell=cell.dup())
-    ps: PS.ParserState(buffer, offset, state)
+    ps: PS.ParserState = PS.ParserState(buffer, offset, state)
     while offset < len(buffer):
         ch: str = buffer[offset]
         if ch == "[":
@@ -101,7 +101,7 @@ def parse_block(
                 cell.column += 1
                 block.children.append(_block)
             else:
-                PS.make_error()
+                ps.make_error()
         elif ch == "]":
             if state == PS.State.in_:
                 if 0 < depth:
@@ -109,7 +109,7 @@ def parse_block(
                 else:
                     pass  # continue paring
             else:
-                PS.make_error()
+                ps.make_error()
         elif ch == "/":
             if state == PS.State.new_line:
                 # eat second "/"
@@ -129,7 +129,7 @@ def parse_block(
             if state == PS.State.in_:
                 block.append_ch(ch)
             else:
-                PS.make_error()
+                ps.make_error()
         offset += 1
     return block, offset
 
