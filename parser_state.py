@@ -15,11 +15,11 @@ ParserState(buffer='', offset=0, state=<State.void: 1>)
 >>> lines
 {1: (0, 18), 2: (18, 29), 3: (47, 7), 4: (54, 55), 5: (109, 6), 6: (115, 7),\
  7: (122, 2)}
->>> which_line(47, lines)
+>>> ps.which_line(47, lines)
 3
->>> which_line(10, lines)
+>>> ps.which_line(10, lines)
 1
->>> which_line(17, lines)
+>>> ps.which_line(17, lines)
 1
 """
 
@@ -48,8 +48,18 @@ class ParserState:
 
     def log_current_line(self) -> None:
         lines: dict[int, tuple[int, int]] = find_line_boundaries(self.buffer)
-        line_no: int = which_line(self.offset, lines)
+        line_no: int = self.which_line(self.offset, lines)
         logging.info(f"{self.offset = }, {line_no = }, {self.state = }")
+
+    @staticmethod
+    def which_line(char_no: int, lines: dict[int, tuple[int, int]]) -> int:
+        """Return the line that has CHAR_NO"""
+
+        for line_no in lines:
+            val = lines[line_no]
+            if char_no in range(val[0], val[0] + val[1]):
+                return line_no
+        return -1  # not found
 
 
 def find_line_boundaries(buffer: str) -> dict[int, tuple[int, int]]:
@@ -67,16 +77,6 @@ def find_line_boundaries(buffer: str) -> dict[int, tuple[int, int]]:
             line_start = char_no + 1
             line_len = 0
     return lines
-
-
-def which_line(char_no: int, lines: dict[int, tuple[int, int]]) -> int:
-    """Return the line that has CHAR_NO"""
-
-    for line_no in lines:
-        val = lines[line_no]
-        if char_no in range(val[0], val[0] + val[1]):
-            return line_no
-    return -1  # not found
 
 
 if __name__ == "__main__":
