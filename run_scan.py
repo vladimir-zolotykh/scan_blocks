@@ -9,7 +9,7 @@ import argcomplete
 import re
 import pprint
 import logging
-import parser_state as PS
+from parser_state import ParserState, State
 
 
 body_re = re.compile(
@@ -79,7 +79,7 @@ def parse_block(
     buffer: str,
     cursor: int = 0,
     cell: Cell = Cell(0, 0),
-    state: PS.State = PS.State.out,
+    state: State = State.out,
     depth: int = 0,
 ) -> tuple[Block, int]:
     """Parse block ([])
@@ -87,49 +87,48 @@ def parse_block(
     returns Block, input buffer offset, Cell (row, column pointer)"""
     offset: int = cursor
     block: Block = Block(cell=cell.dup())
-    ps: PS.ParserState = PS.ParserState(buffer, offset, state)
     while offset < len(buffer):
         ch: str = buffer[offset]
         if ch == "[":
-            if state == PS.State.out:
-                state = PS.State.in_
-            elif state == PS.State.in_:
+            if state == State.out:
+                state = State.in_
+            elif state == State.in_:
                 _block: Block
                 _block, offset = parse_block(
-                    buffer, offset + 1, cell, state=PS.State.in_, depth=depth + 1
+                    buffer, offset + 1, cell, state=State.in_, depth=depth + 1
                 )
                 cell.column += 1
                 block.children.append(_block)
             else:
-                ps.make_error()
+                ParserState(buffer, offset, state).make_error()
         elif ch == "]":
-            if state == PS.State.in_:
+            if state == State.in_:
                 if 0 < depth:
                     return block, offset
                 else:
                     pass  # continue paring
             else:
-                ps.make_error()
+                ParserState(buffer, offset, state).make_error()
         elif ch == "/":
-            if state == PS.State.new_line:
+            if state == State.new_line:
                 # eat second "/"
-                state = PS.State.in_
+                state = State.in_
             else:
-                state = PS.State.new_line
+                state = State.new_line
                 cell.row += 1
                 cell.column = 0
         elif ch == "\n":
             # "/" instead of "//"
-            if state == PS.State.new_line:
-                state = PS.State.in_
+            if state == State.new_line:
+                state = State.in_
             else:
-                ps.log_current_line()
+                ParserState(buffer, offset, state).log_current_line()
                 cell.row += 1
         else:
-            if state == PS.State.in_:
+            if state == State.in_:
                 block.append_ch(ch)
             else:
-                ps.make_error()
+                ParserState(buffer, offset, state).make_error()
         offset += 1
     return block, offset
 
