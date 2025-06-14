@@ -46,11 +46,10 @@ class ParserState:
     def make_error(self) -> None:
         raise InvalidState(self.offset, self.state, "Invalid state")
 
-    def offset2line_number(self) -> int:
-        return 0
-
     def log_current_line(self) -> None:
-        logging.info(f"{self.buffer = }, {self.offset = }, {self.state = }")
+        lines: dict[int, tuple[int, int]] = find_line_boundaries(self.buffer)
+        line_no: int = which_line(self.offset, lines)
+        logging.info(f"{self.offset = }, {line_no = }, {self.state = }")
 
 
 def find_line_boundaries(buffer: str) -> dict[int, tuple[int, int]]:
