@@ -9,10 +9,12 @@ ParserState(buffer='', offset=0, state=<State.void: 1>)
 ...     lightgray_str = f.read()
 ...
 >>> lightgray_str
-'[lightgray: Frame\\n    [] [White: Message text]\\n    //\\n    [goldenrod: OK Button] [] [#ff0505: Cancel Button]\\n    /\\n    []\\n]\\n'
+'[lightgray: Frame\\n    [] [White: Message text]\\n    //\\n    \
+[goldenrod: OK Button] [] [#ff0505: Cancel Button]\\n    /\\n    []\\n]\\n'
 >>> lines = find_line_boundaries(lightgray_str)
 >>> lines
-{1: (0, 18), 2: (18, 29), 3: (47, 7), 4: (54, 55), 5: (109, 6), 6: (115, 7), 7: (122, 2)}
+{1: (0, 18), 2: (18, 29), 3: (47, 7), 4: (54, 55), 5: (109, 6), 6: (115, 7),\
+ 7: (122, 2)}
 >>> which_line(47, lines)
 3
 >>> which_line(10, lines)
@@ -21,7 +23,6 @@ ParserState(buffer='', offset=0, state=<State.void: 1>)
 1
 """
 
-from typing import Optional
 from dataclasses import dataclass
 from enum import Enum
 import logging
