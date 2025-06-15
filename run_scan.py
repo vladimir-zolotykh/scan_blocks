@@ -17,7 +17,7 @@ body_re = re.compile(
 \s*
 (?P<color>\#[\dA-Fa-f]{6}|[a-zA-Z]\w*):
 \s*
-(?P<text>\w+)
+(?P<text>[^][]+)
 \s*""",
     re.VERBOSE | re.MULTILINE | re.DOTALL,
 )
@@ -64,11 +64,11 @@ class Block:
             match = body_re.match(self.body_str)
             if match:
                 color, text = match.groups()
-                result += f"color={color}"
+                result += f'color="{color}"'
                 if text:
-                    result += f", text={text}"
+                    result += f', text="{text}"'
             else:
-                result += f"body={self.body_str}"
+                result += f'body="{self.body_str}"'
         if self.children:
             result += f", children={self.children}"
         result += ")"
@@ -148,4 +148,4 @@ if __name__ == "__main__":
         buffer: str = input.read()
         block: Block
         block = parse_block(buffer, 0, Cell(0, 0))[0]
-        pprint.pprint(repr(block))
+        print(block)
