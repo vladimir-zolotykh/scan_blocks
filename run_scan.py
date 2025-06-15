@@ -138,7 +138,7 @@ parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 )
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.WARN)
     parser.add_argument("file_to_parse", choices=glob.glob("*.blk"))
     argcomplete.autocomplete(parser)
     args = parser.parse_args()
