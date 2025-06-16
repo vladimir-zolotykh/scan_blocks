@@ -16,7 +16,7 @@ from parser_state import ParserState, State
 body_re = re.compile(r"""\s*
                          (?P<color>\#[\dA-Fa-f]{6}|[a-zA-Z]\w*):
                          \s*
-                         (?P<text>[^][]+)
+                         (?P<text>[^][\n]+)
                          \s*""",
                      re.VERBOSE)
 # fmt: on
@@ -121,6 +121,9 @@ def parse_block(
             if state == State.new_line:
                 state = State.in_
             else:
+                if state != State.in_:
+                    ParserState(buffer, offset, state).male_error()
+                block.append_ch(ch)
                 ParserState(buffer, offset, state).log_current_line()
                 cell.row += 1
         else:
