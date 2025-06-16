@@ -12,15 +12,14 @@ import logging
 from parser_state import ParserState, State
 
 
-body_re = re.compile(
-    r"""
-\s*
-(?P<color>\#[\dA-Fa-f]{6}|[a-zA-Z]\w*):
-\s*
-(?P<text>[^][]+)
-\s*""",
-    re.VERBOSE | re.MULTILINE | re.DOTALL,
-)
+# fmt: off
+body_re = re.compile(r"""\s*
+                         (?P<color>\#[\dA-Fa-f]{6}|[a-zA-Z]\w*):
+                         \s*
+                         (?P<text>[^][]+)
+                         \s*""",
+                     re.VERBOSE)
+# fmt: on
 
 
 @dataclass
