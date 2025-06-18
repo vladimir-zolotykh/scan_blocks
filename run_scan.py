@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
 from __future__ import annotations
+import os
 from dataclasses import dataclass, field
 import glob
 import argparse
@@ -9,6 +10,7 @@ import argcomplete
 import re
 import pprint
 import logging
+import pickle
 from parser_state import ParserState, State
 
 
@@ -139,15 +141,27 @@ parser = argparse.ArgumentParser(
     description="Parse .blk file",
     formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 )
+parser.add_argument(
+    "--pickle",
+    action="store_true",
+    help=" Pickle Block object in a file",
+)
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARN)
     parser.add_argument("file_to_parse", choices=glob.glob("*.blk"))
     argcomplete.autocomplete(parser)
     args = parser.parse_args()
     found_blk_files: list[str] = []
+    block: Block
     with open(args.file_to_parse) as input:
-        # type(input):   <class '_io.TextIOWrapper'>
         buffer: str = input.read()
-        block: Block
         block = parse_block(buffer, 0, Cell(0, 0))[0]
-        print(block)
+    if args.pickle:
+        pickle_filename = (
+            os.path.splitext(os.path.basename(args.file_to_parse))[0] + ".pickle"
+        )
+        print(f"{pickle_filename = }")
+        with open(pickle_filename, "wb") as pickle_descriptor:
+            pickle.dump(block, pickle_descriptor)
+            print(f"Block saved in {pickle_filename}")
+    print(block)
