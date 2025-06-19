@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
+from typing import Optional
 import glob
 import argparse
 import pickle
@@ -13,6 +14,28 @@ parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 )
 
+GridType = list[list[Optional[Block]]]
+
+
+def build_grid(
+    block: Block, grid: GridType = list([]), last: Cell = Cell(0, 0)
+) -> GridType:
+    row, column = block.cell.row, block.cell.column
+    print(f"{row = }, {column = }, {last = }")
+    while last.row < row:
+        grid.append(list())
+        last.row += 1
+    while last.column < column:
+        grid[-1].append(None)
+        last.column += 1
+    grid[-1].append(block)
+    grid.append(list())
+    last.row += 1
+    for child in block.children:
+        build_grid(child, grid, last.dup())
+        last.column += 1
+    return grid
+
 
 if __name__ == "__main__":
     argcomplete.autocomplete(parser)
@@ -23,4 +46,5 @@ if __name__ == "__main__":
     block: Block
     with open(args.pickle, "rb") as pickle_file:
         block = pickle.load(pickle_file)
-    print(block)
+    grid: GridType = build_grid(block)
+    print(grid)
