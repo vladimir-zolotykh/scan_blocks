@@ -124,7 +124,7 @@ def parse_block(
                 state = State.in_
             else:
                 if state != State.in_:
-                    ParserState(buffer, offset, state).male_error()
+                    ParserState(buffer, offset, state).make_error()
                 block.append_ch(ch)
                 ParserState(buffer, offset, state).log_current_line()
                 cell.row += 1
