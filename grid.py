@@ -18,10 +18,9 @@ GridType = list[list[Optional[Block]]]
 
 
 def build_grid(
-    block: Block, grid: GridType = list([]), last: Cell = Cell(0, 0)
+    block: Block, grid: GridType = [[]], last: Cell = Cell(0, 0)
 ) -> GridType:
     row, column = block.cell.row, block.cell.column
-    print(f"{row = }, {column = }, {last = }")
     while last.row < row:
         grid.append(list())
         last.row += 1
