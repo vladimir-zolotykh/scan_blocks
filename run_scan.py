@@ -8,7 +8,6 @@ import glob
 import argparse
 import argcomplete
 import re
-import pprint
 import logging
 import pickle
 from parser_state import ParserState, State
@@ -44,15 +43,36 @@ class Cell:
 
 @dataclass
 class Block:
-    color: str = ""
-    text: str = ""
+    _color: str = ""
+    _text: str = ""
     cell: Cell = field(default_factory=Cell)
     _body: list[str] = field(default_factory=list)
     children: list[Block] = field(default_factory=list)
 
     @property
+    def color(self):
+        return self._color
+
+    @property
+    def text(self):
+        return self._text
+
+    @property
     def body_str(self) -> str:
         return "".join(self._body)
+
+    def init_text(self) -> None:
+        """Extract COLOR, TEXT stromgs from body_str
+
+        Set corresponding class attributes"""
+        match = body_re.match(self.body_str)
+        if match:
+            color, text = match.groups()
+            if color:
+                self._color = color
+            if text:
+                self._text = text
+        return self
 
     def append_ch(self, ch: str) -> None:
         self._body.append(ch)
@@ -62,12 +82,11 @@ class Block:
         result += repr(self.cell)
         if self._body:
             result += ", "
-            match = body_re.match(self.body_str)
-            if match:
-                color, text = match.groups()
-                result += f'color="{color}"'
-                if text:
-                    result += f', text="{text}"'
+            self.init_text()
+            if self.color:
+                result += f'color="{self.color}"'
+            if self.text:
+                result += f', text="{self.text}"'
             else:
                 result += f'body="{self.body_str}"'
         if self.children:
@@ -134,7 +153,7 @@ def parse_block(
             else:
                 ParserState(buffer, offset, state).make_error()
         offset += 1
-    return block, offset
+    return block.init_text(), offset
 
 
 parser = argparse.ArgumentParser(
@@ -160,7 +179,6 @@ if __name__ == "__main__":
         pickle_filename = (
             os.path.splitext(os.path.basename(args.file_to_parse))[0] + ".pickle"
         )
-        print(f"{pickle_filename = }")
         with open(pickle_filename, "wb") as pickle_descriptor:
             pickle.dump(block, pickle_descriptor)
             print(f"Block saved in {pickle_filename}")
