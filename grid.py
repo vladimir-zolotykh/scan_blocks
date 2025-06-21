@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
 from typing import Optional
+from dataclasses import dataclass
 import glob
 import argparse
 import pickle
@@ -14,7 +15,19 @@ parser = argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter,
 )
 
-GridType = list[list[Optional[Block]]]
+
+@dataclass
+class Node:
+    row: int = 0
+    column: int = 0
+    color: str = ""
+    text: str = ""
+
+    def __str____(self):
+        return f"[{self.row}, {self.column}] {self.color!r}: {self.text!r}"
+
+
+GridType = list[list[Optional[Node]]]
 
 
 def build_grid(
@@ -27,7 +40,7 @@ def build_grid(
     while last.column < column:
         grid[-1].append(None)
         last.column += 1
-    grid[-1].append(block)
+    grid[-1].append(Node(row, column, block.color, block.text))
     grid.append(list())
     last.row += 1
     for child in block.children:
@@ -46,4 +59,5 @@ if __name__ == "__main__":
     with open(args.pickle, "rb") as pickle_file:
         block = pickle.load(pickle_file)
     grid: GridType = build_grid(block)
-    print(grid)
+    for row_num, row in enumerate(grid):
+        print(f"{row_num}: {len(row) = }")
