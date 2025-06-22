@@ -118,7 +118,7 @@ def parse_block(
                     buffer, offset + 1, cell, state=State.in_, depth=depth + 1
                 )
                 cell.column += 1
-                block.children.append(_block)
+                block.children.append(_block.init_text())
             else:
                 ParserState(buffer, offset, state).make_error()
         elif ch == "]":
