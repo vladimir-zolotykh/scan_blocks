@@ -32,21 +32,23 @@ GridType = list[list[Optional[Node]]]
 
 def build_grid(
     block: Block, grid: GridType = [[]], last: Cell = Cell(0, 0)
-) -> GridType:
+) -> tuple[GridType, Cell]:
     row, column = block.cell.row, block.cell.column
     while last.row < row:
-        grid.append(list())
+        grid.append([])
         last.row += 1
     while last.column < column:
-        grid[-1].append(None)
+        grid[-1].append(Node(row, column))
         last.column += 1
     grid[-1].append(Node(row, column, block.color, block.text))
     grid.append(list())
     last.row += 1
     for child in block.children:
-        build_grid(child, grid, last.dup())
+        _cell: Cell
+        _, _cell = build_grid(child, grid, last.dup())
+        last = _cell.dup()
         last.column += 1
-    return grid
+    return grid, last
 
 
 if __name__ == "__main__":
@@ -58,5 +60,5 @@ if __name__ == "__main__":
     block: Block
     with open(args.pickle, "rb") as pickle_file:
         block = pickle.load(pickle_file)
-    grid: GridType = build_grid(block)
+    grid: GridType = build_grid(block, [[]], Cell(0, 0))[0]
     print(grid)
