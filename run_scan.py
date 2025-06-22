@@ -61,7 +61,7 @@ class Block:
     def body_str(self) -> str:
         return "".join(self._body)
 
-    def init_text(self) -> None:
+    def init_text(self) -> Block:
         """Extract COLOR, TEXT stromgs from body_str
 
         Set corresponding class attributes"""

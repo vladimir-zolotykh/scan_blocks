@@ -59,5 +59,4 @@ if __name__ == "__main__":
     with open(args.pickle, "rb") as pickle_file:
         block = pickle.load(pickle_file)
     grid: GridType = build_grid(block)
-    for row_num, row in enumerate(grid):
-        print(f"{row_num}: {len(row) = }")
+    print(grid)
