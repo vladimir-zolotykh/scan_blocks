@@ -135,7 +135,7 @@ def parse_block(
                 state = State.in_
             else:
                 state = State.new_line
-                cell.row += 1
+                # cell.row += 1
                 cell.column = 0
         elif ch == "\n":
             # "/" instead of "//"
