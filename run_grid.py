@@ -38,11 +38,9 @@ def build_grid(
         grid.append([])
         last.row += 1
     while last.column < column:
-        grid[-1].append(Node(row, column))
+        grid[row].append(Node(row, column))
         last.column += 1
-    grid[-1].append(Node(row, column, block.color, block.text))
-    grid.append(list())
-    last.row += 1
+    grid[row].append(Node(row, column, block.color, block.text))
     for child in block.children:
         _cell: Cell
         _, _cell = build_grid(child, grid, last.dup())
