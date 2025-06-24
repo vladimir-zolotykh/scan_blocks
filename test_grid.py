@@ -9,6 +9,8 @@
 ...     buf = f.read()
 ...     blk = RS.parse_block(buf, 0, RS.Cell(0, 0), RS.track_state(PS.State.void))[0]
 ...
+>>> with open("message.pickle", "wb") as p:
+...     pickle.dump(blk, p)
 >>> blk
 Block(Cell(0, 0), color="#00CCDE", text="Messagebox Window", \
 children=[Block(Cell(1, 0), color="lightgray", text="Frame", children=[Block(Cell(2, 0)), \
@@ -41,6 +43,7 @@ Node(row=4, column=2, color='#ff0505', text='Cancel Button')], \
 
 if __name__ == "__main__":
     import doctest
+    import pickle
     from run_scan import Block, Cell  # noqa: F401
 
     doctest.testmod()
