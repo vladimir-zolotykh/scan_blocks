@@ -2,7 +2,11 @@
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
 import xml.etree.ElementTree as ET
-from run_scan import Block, Cell
+import glob
+import argparse
+import argcomplete
+import run_scan as RS
+import run_grid as RG
 
 
 svg_root = ET.Element(
@@ -23,13 +27,7 @@ x_spacing: int = 36
 y_offset: int = 10
 
 
-def get_geometry(block: Block) -> Cell:
-    """Traverse Block tree, return the geometry"""
-
-    pass
-
-
-def build_xml(svg: ET.Element, block: Block, cell: Cell) -> tuple[ET.Element, Cell]:
+def build_svg(grid: RG.GridType) -> ET.Element:
     y: int = y_offset + cell.row * rect_height
     x: int = cell.column * x_spacing
     fill, text = block.color, block.text
@@ -56,7 +54,27 @@ def build_xml(svg: ET.Element, block: Block, cell: Cell) -> tuple[ET.Element, Ce
         },
     ).text = text
 
-    for child in block.children:
-        build_xml(svg, child, cell)
     # svg.set("viewBox", f"0 0 {x + rect_width} {y + rect_height}")
     return svg
+
+
+parser = argparse.ArgumentParser(
+    description="Build SVG from .blk file",
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+)
+
+if __name__ == "__main__":
+    parser.add_argument(
+        "blk_file", help=".blk file to convert to SVG", choices=glob.glob("*.blk")
+    )
+    argcomplete.autocomplete(parser)
+    args = parser.parse_args()
+    block: RS.Block
+    with open(args.blk_file) as f:
+        buf: str = f.read()
+        block = RS.parse_block(buf, 0, RS.Cell(0, 0))[0]
+    grid: RG.GridType = RG.build_grid(block, [[]], RS.Cell(0, 0))[0]
+    print(grid)
+    exit(0)
+    svg = build_svg(grid)
+    print(svg)
