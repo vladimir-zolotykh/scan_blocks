@@ -2,9 +2,6 @@
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
 """
->>> import run_scan as RS
->>> import run_grid as RG
->>> import parser_state as PS
 >>> with open("message.blk") as f:
 ...     buf = f.read()
 ...     blk = RS.parse_block(buf, 0, RS.Cell(0, 0), RS.track_state(PS.State.void))[0]
@@ -23,8 +20,6 @@ Block(Cell(5, 0))])])
 <State.in_: 2>, <State.new_line: 4>, <State.in_: 2>, <State.in_: 2>, \
 <State.in_: 2>, <State.in_: 2>, <State.new_line: 4>, <State.in_: 2>, \
 <State.in_: 2>]
->>> import pickle
->>> import run_grid as RG
 >>> with open("message.pickle", "rb") as f:
 ...     blk = pickle.load(f)
 ...
@@ -44,6 +39,10 @@ Node(row=4, column=2, color='#ff0505', text='Cancel Button')], \
 if __name__ == "__main__":
     import doctest
     import pickle
+    import run_scan as RS
+    import run_grid as RG
+    import parser_state as PS
+
     from run_scan import Block, Cell  # noqa: F401
 
     doctest.testmod()
