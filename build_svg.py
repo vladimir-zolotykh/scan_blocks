@@ -27,7 +27,19 @@ x_spacing: int = 36
 y_offset: int = 10
 
 
+def get_size(grid: RG.GridType) -> tuple[int, int]:
+    """Return size (columns, rows) of `grid'"""
+
+    rows: int = len(grid)
+    columns: int = 0
+    for row in grid:
+        if columns < len(row):
+            columns = len(row)
+    return columns, rows
+
+
 def build_svg(grid: RG.GridType) -> ET.Element:
+    print(get_size(grid))
     y: int = y_offset + cell.row * rect_height
     x: int = cell.column * x_spacing
     fill, text = block.color, block.text
@@ -74,7 +86,5 @@ if __name__ == "__main__":
         buf: str = f.read()
         block = RS.parse_block(buf, 0, RS.Cell(0, 0))[0]
     grid: RG.GridType = RG.build_grid(block, [[]], RS.Cell(0, 0))[0]
-    print(grid)
-    exit(0)
     svg = build_svg(grid)
     print(svg)
