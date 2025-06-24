@@ -8,7 +8,7 @@
 ...
 >>> with open("message.pickle", "wb") as p:
 ...     pickle.dump(blk, p)
->>> blk
+>>> blk  # doctest: +NORMALIZE_WHITESPACE
 Block(Cell(0, 0), color="#00CCDE", text="Messagebox Window", \
 children=[Block(Cell(1, 0), color="lightgray", text="Frame", children=[Block(Cell(2, 0)), \
 Block(Cell(2, 1), color="White", text="Message text"), \
@@ -24,24 +24,25 @@ Block(Cell(5, 0))])])
 ...     blk = pickle.load(f)
 ...
 >>> grid = RG.build_grid(blk, [[]], RS.Cell(0, 0))[0]
->>> grid
+>>> grid  # doctest: +NORMALIZE_WHITESPACE
 [[Node(row=0, column=0, color='#00CCDE', text='Messagebox Window')], \
-[Node(row=1, column=0, color='lightgray', text='Frame')], \
-[Node(row=2, column=0, color='', text=''), \
-Node(row=2, column=1, color='White', text='Message text')], [], \
-[Node(row=4, column=0, color='goldenrod', text='OK Button'), \
-Node(row=4, column=1, color='', text=''), \
-Node(row=4, column=2, color='#ff0505', text='Cancel Button')], \
-[Node(row=5, column=0, color='', text='')]]
+ [Node(row=1, column=0, color='lightgray', text='Frame')], \
+ [Node(row=2, column=0, color='', text=''), \
+  Node(row=2, column=1, color='White', text='Message text')],
+ [], \
+ [Node(row=4, column=0, color='goldenrod', text='OK Button'), \
+  Node(row=4, column=1, color='', text=''), \
+  Node(row=4, column=2, color='#ff0505', text='Cancel Button')], \
+ [Node(row=5, column=0, color='', text='')]]
 
 """
 
 if __name__ == "__main__":
     import doctest
-    import pickle
-    import run_scan as RS
-    import run_grid as RG
-    import parser_state as PS
+    import pickle  # noqa: F401
+    import run_scan as RS  # noqa: F401
+    import run_grid as RG  # noqa: F401
+    import parser_state as PS  # noqa: F401
 
     from run_scan import Block, Cell  # noqa: F401
 
