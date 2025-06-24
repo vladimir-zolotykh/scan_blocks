@@ -95,6 +95,14 @@ class Block:
         return result
 
 
+state_history: list[State] = []
+
+
+def track_state(state: State) -> State:
+    state_history.append(state)
+    return state
+
+
 def parse_block(
     buffer: str,
     cursor: int = 0,
@@ -111,11 +119,15 @@ def parse_block(
         ch: str = buffer[offset]
         if ch == "[":
             if state == State.out:
-                state = State.in_
+                state = track_state(State.in_)
             elif state == State.in_:
                 _block: Block
                 _block, offset = parse_block(
-                    buffer, offset + 1, cell, state=State.in_, depth=depth + 1
+                    buffer,
+                    offset + 1,
+                    cell,
+                    state=track_state(State.in_),
+                    depth=depth + 1,
                 )
                 cell.column += 1
                 block.children.append(_block.init_text())
@@ -132,15 +144,15 @@ def parse_block(
         elif ch == "/":
             if state == State.new_line:
                 # eat second "/"
-                state = State.in_
+                state = track_state(State.in_)
             else:
-                state = State.new_line
+                state = track_state(State.new_line)
                 # cell.row += 1
                 cell.column = 0
         elif ch == "\n":
             # "/" instead of "//"
             if state == State.new_line:
-                state = State.in_
+                state = track_state(State.in_)
             else:
                 if state != State.in_:
                     ParserState(buffer, offset, state).make_error()
@@ -174,7 +186,7 @@ if __name__ == "__main__":
     block: Block
     with open(args.file_to_parse) as input:
         buffer: str = input.read()
-        block = parse_block(buffer, 0, Cell(0, 0))[0]
+        block = parse_block(buffer, 0, Cell(0, 0), track_state(State.out))[0]
     if args.pickle:
         pickle_filename = (
             os.path.splitext(os.path.basename(args.file_to_parse))[0] + ".pickle"
@@ -182,4 +194,5 @@ if __name__ == "__main__":
         with open(pickle_filename, "wb") as pickle_descriptor:
             pickle.dump(block, pickle_descriptor)
             print(f"Block saved in {pickle_filename}")
+    print(state_history)
     print(block)
