@@ -107,7 +107,7 @@ def parse_block(
     buffer: str,
     cursor: int = 0,
     cell: Cell = Cell(0, 0),
-    state: State = State.out,
+    state: State = State.void,
     depth: int = 0,
 ) -> tuple[Block, int]:
     """Parse block ([])
@@ -118,7 +118,7 @@ def parse_block(
     while offset < len(buffer):
         ch: str = buffer[offset]
         if ch == "[":
-            if state == State.out:
+            if state == State.void:
                 state = track_state(State.in_)
             elif state == State.in_:
                 _block: Block
@@ -186,7 +186,7 @@ if __name__ == "__main__":
     block: Block
     with open(args.file_to_parse) as input:
         buffer: str = input.read()
-        block = parse_block(buffer, 0, Cell(0, 0), track_state(State.out))[0]
+        block = parse_block(buffer, 0, Cell(0, 0), track_state(State.void))[0]
     if args.pickle:
         pickle_filename = (
             os.path.splitext(os.path.basename(args.file_to_parse))[0] + ".pickle"
