@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
+import sys
+from typing import Optional
 import xml.etree.ElementTree as ET
 import glob
 import argparse
@@ -38,13 +40,9 @@ def get_size(grid: RG.GridType) -> tuple[int, int]:
     return columns, rows
 
 
-def build_svg(grid: RG.GridType) -> ET.Element:
-    print(get_size(grid))
-    y: int = y_offset + cell.row * rect_height
-    x: int = cell.column * x_spacing
-    fill, text = block.color, block.text
+def sub_rect(x: int, y: int, fill: str, text: str) -> None:
     ET.SubElement(
-        svg,
+        svg_root,
         "rect",
         {
             "x": str(x),
@@ -56,7 +54,7 @@ def build_svg(grid: RG.GridType) -> ET.Element:
         },
     )
     ET.SubElement(
-        svg,
+        svg_root,
         "text",
         {
             "x": str(x + rect_width // 2),
@@ -66,8 +64,23 @@ def build_svg(grid: RG.GridType) -> ET.Element:
         },
     ).text = text
 
-    # svg.set("viewBox", f"0 0 {x + rect_width} {y + rect_height}")
-    return svg
+
+def build_svg(grid: RG.GridType) -> ET.Element:
+    x: int = 0
+    y: int = 0
+    columns, _ = get_size(grid)
+    row: list[Optional[RG.Node]]
+    node: Optional[RG.Node]
+    for row_index, row in enumerate(grid):
+        for column_index, node in enumerate(row):
+            y = y_offset + row_index * rect_height
+            x = column_index * x_spacing
+            assert node
+            fill, text = node.color, node.text
+            sub_rect(x, y, fill, text)
+
+    # svg_root.set("viewBox", f"0 0 {x + rect_width} {y + rect_height}")
+    return svg_root
 
 
 parser = argparse.ArgumentParser(
@@ -86,5 +99,10 @@ if __name__ == "__main__":
         buf: str = f.read()
         block = RS.parse_block(buf, 0, RS.Cell(0, 0))[0]
     grid: RG.GridType = RG.build_grid(block, [[]], RS.Cell(0, 0))[0]
-    svg = build_svg(grid)
-    print(svg)
+    build_svg(grid)
+    tree = ET.ElementTree(svg_root)
+    with open("message.svg", "w", encoding="utf-8") as f:
+        f.write('<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n')
+        f.write('<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"\n')
+        f.write('    "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">\n')
+        tree.write(f, encoding="unicode")
