@@ -2,3 +2,4 @@ __pycache__
 *.blk
 *.pickle
 grid_dir/
+*.svg
