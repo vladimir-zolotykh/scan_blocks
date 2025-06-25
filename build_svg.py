@@ -40,7 +40,9 @@ def get_size(grid: RG.GridType) -> tuple[int, int]:
     return columns, rows
 
 
-def sub_rect(x: int, y: int, fill: str, text: str) -> None:
+def sub_rect(
+    x: int, y: int, text: str, fill: str = "None", stroke: str = "None"
+) -> None:
     ET.SubElement(
         svg_root,
         "rect",
@@ -50,7 +52,7 @@ def sub_rect(x: int, y: int, fill: str, text: str) -> None:
             "width": str(rect_width),
             "height": str(rect_height),
             "fill": fill,
-            "stroke": "black",
+            "stroke": stroke,
         },
     )
     ET.SubElement(
@@ -77,7 +79,10 @@ def build_svg(grid: RG.GridType) -> ET.Element:
             x = column_index * x_spacing
             assert node
             fill, text = node.color, node.text
-            sub_rect(x, y, fill, text)
+            if fill == "":
+                fill = "None"
+            stroke = "black" if text else "None"
+            sub_rect(x, y, text, fill, stroke)
 
     # svg_root.set("viewBox", f"0 0 {x + rect_width} {y + rect_height}")
     return svg_root
