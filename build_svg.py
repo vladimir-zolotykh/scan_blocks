@@ -19,7 +19,7 @@ svg_root = ET.Element(
         "xml:space": "preserve",
         "width": "432px",
         "height": "240px",
-        "viewBox": "0 0 108 60",
+        "viewBox": "0 0 108 70",
     },
 )
 rect_width: int = 36
@@ -60,7 +60,7 @@ def sub_rect(x: int, y: int, fill: str, text: str) -> None:
             "x": str(x + rect_width // 2),
             "y": str(y + rect_height - 3),
             "text-anchor": "middle",
-            "font-size": str(font_size),
+            "font-size": str(font_size - 1),
         },
     ).text = text
 
