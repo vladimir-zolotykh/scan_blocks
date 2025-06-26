@@ -22,6 +22,7 @@ class Node:
     column: int = 0
     color: str = ""
     text: str = ""
+    depth: int = 0
 
     def __str____(self):
         return f"[{self.row}, {self.column}] {self.color!r}: {self.text!r}"
@@ -40,7 +41,7 @@ def build_grid(
     while last.column < column:
         grid[row].append(Node(row, column))
         last.column += 1
-    grid[row].append(Node(row, column, block.color, block.text))
+    grid[row].append(Node(row, column, block.color, block.text, block.depth))
     for child in block.children:
         _cell: Cell
         _, _cell = build_grid(child, grid, last.dup())

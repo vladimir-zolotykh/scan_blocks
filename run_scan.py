@@ -48,6 +48,7 @@ class Block:
     cell: Cell = field(default_factory=Cell)
     _body: list[str] = field(default_factory=list)
     children: list[Block] = field(default_factory=list)
+    depth: int = 0
 
     @property
     def color(self):
@@ -114,7 +115,7 @@ def parse_block(
 
     returns Block, input buffer offset, Cell (row, column pointer)"""
     offset: int = cursor
-    block: Block = Block(cell=cell.dup())
+    block: Block = Block(cell=cell.dup(), depth=depth)
     while offset < len(buffer):
         ch: str = buffer[offset]
         if ch == "[":

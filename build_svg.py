@@ -41,7 +41,12 @@ def get_size(grid: RG.GridType) -> tuple[int, int]:
 
 
 def sub_rect(
-    x: int, y: int, text: str, fill: str = "None", stroke: str = "None"
+    x: int,
+    y: int,
+    text: str,
+    fill: str = "None",
+    stroke: str = "None",
+    width: int = rect_width,
 ) -> None:
     ET.SubElement(
         svg_root,
@@ -49,7 +54,7 @@ def sub_rect(
         {
             "x": str(x),
             "y": str(y),
-            "width": str(rect_width),
+            "width": str(width),
             "height": str(rect_height),
             "fill": fill,
             "stroke": stroke,
@@ -59,7 +64,7 @@ def sub_rect(
         svg_root,
         "text",
         {
-            "x": str(x + rect_width // 2),
+            "x": str(x + width // 2),
             "y": str(y + rect_height - 3),
             "text-anchor": "middle",
             "font-size": str(font_size - 1),
@@ -78,11 +83,16 @@ def build_svg(grid: RG.GridType) -> ET.Element:
             y = y_offset + row_index * rect_height
             x = column_index * x_spacing
             assert node
-            fill, text = node.color, node.text
+            fill, text, depth = node.color, node.text, node.depth
             if fill == "":
                 fill = "None"
             stroke = "black" if text else "None"
-            sub_rect(x, y, text, fill, stroke)
+            _width: int = rect_width
+            _width = rect_width * columns if len(row) == 1 else rect_width
+            if depth == 1:
+                stroke = "None"
+                fill = "None"
+            sub_rect(x, y, text, fill, stroke, _width)
 
     # svg_root.set("viewBox", f"0 0 {x + rect_width} {y + rect_height}")
     return svg_root
