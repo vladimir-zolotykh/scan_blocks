@@ -41,7 +41,6 @@ rect_width: int = 36
 rect_height: int = 10
 font_size: int = 5
 x_spacing: int = 36
-y_offset: int = 10
 
 
 def get_size(grid: RG.GridType) -> tuple[int, int]:
@@ -95,7 +94,7 @@ def build_svg(grid: RG.GridType) -> ET.Element:
     node: Optional[RG.Node]
     for row_index, row in enumerate(grid):
         for column_index, node in enumerate(row):
-            y = y_offset + row_index * rect_height
+            y = row_index * rect_height
             x = column_index * x_spacing
             assert node
             fill, text, depth = node.color, node.text, node.depth
