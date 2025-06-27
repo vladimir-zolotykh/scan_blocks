@@ -90,7 +90,7 @@ def sub_rect(
 def build_svg(grid: RG.GridType) -> ET.Element:
     x: int = 0
     y: int = 0
-    columns, _ = get_size(grid)
+    columns, rows = get_size(grid)
     row: list[Optional[RG.Node]]
     node: Optional[RG.Node]
     for row_index, row in enumerate(grid):
@@ -109,7 +109,9 @@ def build_svg(grid: RG.GridType) -> ET.Element:
                 fill = "None"
             sub_rect(x, y, text, fill, stroke, _width)
 
-    # svg_root.set("viewBox", f"0 0 {x + rect_width} {y + rect_height}")
+    _w = rect_width * columns
+    _h = rect_height * rows
+    svg_root.set("viewBox", f"0 0 {_w} {_h}")
     return svg_root
 
 
