@@ -10,6 +10,10 @@ import argcomplete
 import run_scan as RS
 import run_grid as RG
 
+canvas_width = "432px"
+canvas_height = "240px"
+view_width = 108
+view_height = 70
 
 svg_root = ET.Element(
     "svg",
@@ -17,11 +21,22 @@ svg_root = ET.Element(
         "xmlns": "http://www.w3.org/2000/svg",
         "xmlns:xlink": "http://www.w3.org/1999/xlink",
         "xml:space": "preserve",
-        "width": "432px",
-        "height": "240px",
-        "viewBox": "0 0 108 70",
+        "width": canvas_width,
+        "height": canvas_height,
+        "viewBox": f"0 0 {view_width} {view_height}",
     },
 )
+background = ET.Element(
+    "rect",
+    {
+        "x": "0px",
+        "y": "0px",
+        "width": canvas_width,
+        "height": canvas_height,
+        "fill": "lightgray",
+    },
+)
+svg_root.insert(0, background)
 rect_width: int = 36
 rect_height: int = 10
 font_size: int = 5
