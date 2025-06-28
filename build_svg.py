@@ -102,15 +102,14 @@ def build_svg(grid: RG.GridType) -> ET.Element:
                 fill = "None"
             stroke = "black" if text else "None"
             _width: int = rect_width
+            # handle [#00CCDE: Messagebox Window
             _width = rect_width * columns if len(row) == 1 else rect_width
-            if depth == 1:
+            if depth == 1:  # [lightgray: Frame
                 stroke = "None"
-                fill = "None"
+                # fill = "None"
             sub_rect(x, y, text, fill, stroke, _width)
 
-    _w = rect_width * columns
-    _h = rect_height * rows
-    svg_root.set("viewBox", f"0 0 {_w} {_h}")
+    svg_root.set("viewBox", f"0 0 {rect_width * columns} {rect_height * rows}")
     return svg_root
 
 
