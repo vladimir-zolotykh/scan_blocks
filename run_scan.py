@@ -42,7 +42,7 @@ class Cell:
 
 
 def extract_tags(
-    text: str, tags: tuple[str, ...] = ("nostroke", "center")
+    text: str, tags: tuple[str, ...] = (":nostroke", ":center")
 ) -> tuple[str, list[str]]:
     """Modify TEXT string.
 
@@ -88,8 +88,7 @@ class Block:
             if color:
                 self._color = color
             if text:
-                tags: list[str]
-                self._text, self.tags = extract_tags(text, ["nostroke", "center"])
+                self._text, self.tags = extract_tags(text)
         return self
 
     def append_ch(self, ch: str) -> None:
