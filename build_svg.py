@@ -61,7 +61,6 @@ def sub_rect(
     fill: str = "None",
     stroke: str = "None",
     width: int = rect_width,
-    tags: list[str] = [],
 ) -> None:
     ET.SubElement(
         svg_root,
@@ -98,17 +97,16 @@ def build_svg(grid: RG.GridType) -> ET.Element:
             y = row_index * rect_height
             x = column_index * x_spacing
             assert node
-            fill, text, depth, tags = node.color, node.text, node.depth, node.tags
+            fill, text = node.color, node.text
             if fill == "":
                 fill = "None"
-            stroke = "black" if text else "None"
-            _width: int = rect_width
-            # handle [#00CCDE: Messagebox Window
-            _width = rect_width * columns if len(row) == 1 else rect_width
-            if depth == 1:  # [lightgray: Frame
+            stroke = "black"
+            if ":nostroke" in node.tags:
                 stroke = "None"
-                # fill = "None"
-            sub_rect(x, y, text, fill, stroke, _width, tags)
+            if node.text.strip() == "":
+                stroke = "None"
+            width = rect_width * columns if (":center" in node.tags) else rect_width
+            sub_rect(x, y, text, fill, stroke, width)
 
     svg_root.set("viewBox", f"0 0 {rect_width * columns} {rect_height * rows}")
     return svg_root
