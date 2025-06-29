@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
 from typing import Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import glob
 import argparse
 import pickle
@@ -23,6 +23,7 @@ class Node:
     color: str = ""
     text: str = ""
     depth: int = 0
+    tags: list[str] = field(default_factory=list)
 
     def __str____(self):
         return f"[{self.row}, {self.column}] {self.color!r}: {self.text!r}"
@@ -41,7 +42,9 @@ def build_grid(
     while last.column < column:
         grid[row].append(Node(row, column))
         last.column += 1
-    grid[row].append(Node(row, column, block.color, block.text, block.depth))
+    grid[row].append(
+        Node(row, column, block.color, block.text, block.depth, block.tags)
+    )
     for child in block.children:
         _cell: Cell
         _, _cell = build_grid(child, grid, last.dup())

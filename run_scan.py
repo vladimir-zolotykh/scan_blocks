@@ -41,6 +41,21 @@ class Cell:
         return f"Cell({self.row}, {self.column})"
 
 
+def extract_tags(
+    text: str, tags: tuple[str, ...] = ("nostroke", "center")
+) -> tuple[str, list[str]]:
+    """Modify TEXT string.
+
+    Remove :nostroke, :center from it. Return modified string and found tags"""
+
+    found: list[str] = []
+    for tag in tags:
+        if tag in text:
+            text = text.replace(tag, "")
+            found.append(tag)
+    return text, found
+
+
 @dataclass
 class Block:
     _color: str = ""
@@ -49,6 +64,7 @@ class Block:
     _body: list[str] = field(default_factory=list)
     children: list[Block] = field(default_factory=list)
     depth: int = 0
+    tags: list[str] = field(default_factory=list)
 
     @property
     def color(self):
@@ -72,7 +88,8 @@ class Block:
             if color:
                 self._color = color
             if text:
-                self._text = text
+                tags: list[str]
+                self._text, self.tags = extract_tags(text, ["nostroke", "center"])
         return self
 
     def append_ch(self, ch: str) -> None:
