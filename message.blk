@@ -1,5 +1,5 @@
-[#00CCDE: Messagebox Window
-    [lightgray: Frame
+[#00CCDE: Messagebox Window :center
+    [lightgray: Frame :nostroke :center
         [] [White: Message text]
         //
         [goldenrod: OK Button] [] [#ff0505: Cancel Button]
