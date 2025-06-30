@@ -100,6 +100,7 @@ def build_svg(grid: RG.GridType) -> ET.Element:
             fill, text = node.color, node.text
             if fill == "":
                 fill = "None"
+            stroke = "black"
             if ":nostroke" in node.tags or text.strip() == "":
                 stroke = "None"
             width = rect_width * columns if (":center" in node.tags) else rect_width
