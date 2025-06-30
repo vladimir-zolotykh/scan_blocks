@@ -39,7 +39,7 @@ background = ET.Element(
 svg_root.insert(0, background)
 rect_width: int = 36
 rect_height: int = 10
-font_size: int = 5
+font_size: int = 4
 x_spacing: int = 36
 
 
@@ -81,7 +81,7 @@ def sub_rect(
             "x": str(x + width // 2),
             "y": str(y + rect_height - 3),
             "text-anchor": "middle",
-            "font-size": str(font_size - 1),
+            "font-size": str(font_size),
         },
     ).text = text
 
