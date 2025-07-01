@@ -86,6 +86,12 @@ def sub_rect(
     ).text = text
 
 
+def get_xy(row: int, column: int) -> tuple[int, int]:
+    """Convert row, column (indexes) into coordinates"""
+
+    return row * rect_height, column * x_spacing
+
+
 def build_svg(grid: RG.GridType) -> ET.Element:
     x: int = 0
     y: int = 0
@@ -94,8 +100,7 @@ def build_svg(grid: RG.GridType) -> ET.Element:
     node: Optional[RG.Node]
     for row_index, row in enumerate(grid):
         for column_index, node in enumerate(row):
-            y = row_index * rect_height
-            x = column_index * x_spacing
+            y, x = get_xy(row_index, column_index)
             assert node
             fill, text = node.color, node.text
             if fill == "":
