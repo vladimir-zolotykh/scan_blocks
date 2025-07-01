@@ -10,8 +10,10 @@ import argcomplete
 import run_scan as RS
 import run_grid as RG
 
-canvas_width = "432px"
-canvas_height = "240px"
+screen_width = 1280
+screen_height = 1024
+canvas_width = f"{screen_width // 3}px"
+canvas_height = f"{screen_height // 3}px"
 view_width = 108
 view_height = 70
 
@@ -87,15 +89,37 @@ def sub_rect(
     ).text = text
 
 
-def get_xy(row: int, column: int) -> tuple[int, int]:
-    """Convert row, column (indexes) into coordinates"""
-    v = stroke_thickness
-    return v + row * (rect_height + v + v), v + column * (rect_width + v + v)
+def get_y(row: int, v: int = stroke_thickness, h: int = rect_height) -> int:
+    if row == 0:
+        return v
+    else:
+        return get_y(row - 1) + h + v
+
+
+def get_x(column: int, v: int = stroke_thickness, w: int = rect_width) -> int:
+    if column == 0:
+        return v
+    else:
+        return get_x(column - 1) + w + v
+
+
+def get_xy(
+    row: int,
+    column: int,
+    v: int = stroke_thickness,
+    h: int = rect_height,
+    w: int = rect_width,
+) -> tuple[int, int]:
+    """Convert ROW, COLUMN (indexes) into coordinates (Y, X)"""
+
+    return get_y(row, v, h), get_x(column, v, w)
 
 
 def build_svg(grid: RG.GridType) -> ET.Element:
     x: int = 0
     y: int = 0
+    v: int = stroke_thickness
+    width: int
     columns, rows = get_size(grid)
     row: list[Optional[RG.Node]]
     node: Optional[RG.Node]
@@ -109,10 +133,15 @@ def build_svg(grid: RG.GridType) -> ET.Element:
             stroke = "black"
             if ":nostroke" in node.tags or text.strip() == "":
                 stroke = "None"
-            width = rect_width * columns if (":center" in node.tags) else rect_width
+            if ":center" in node.tags:
+                width = rect_width * columns + 2 * v
+            else:
+                width = rect_width + 2 * v
             sub_rect(x, y, text, fill, stroke, width)
 
-    svg_root.set("viewBox", f"0 0 {rect_width * columns} {rect_height * rows}")
+    _y, _x = get_xy(rows, columns)
+    # svg_root.set("viewBox", f"0 0 {_x} {_y}")
+    svg_root.set("viewBox", f"1 1 {rect_width * columns + 2} {rect_height * rows + 2}")
     return svg_root
 
 
