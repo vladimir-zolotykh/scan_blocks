@@ -41,6 +41,7 @@ rect_width: int = 36
 rect_height: int = 10
 font_size: int = 4
 x_spacing: int = 36
+stroke_thickness = 1
 
 
 def get_size(grid: RG.GridType) -> tuple[int, int]:
@@ -88,8 +89,8 @@ def sub_rect(
 
 def get_xy(row: int, column: int) -> tuple[int, int]:
     """Convert row, column (indexes) into coordinates"""
-
-    return row * rect_height, column * x_spacing
+    v = stroke_thickness
+    return v + row * (rect_height + v + v), v + column * (rect_width + v + v)
 
 
 def build_svg(grid: RG.GridType) -> ET.Element:
