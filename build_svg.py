@@ -121,12 +121,15 @@ def build_svg(grid: RG.GridType) -> ET.Element:
     v: int = stroke_thickness
     width: int
     columns, rows = get_size(grid)
-    row: list[Optional[RG.Node]]
+    # row: list[Optional[RG.Node]]
     node: Optional[RG.Node]
-    for row_index, row in enumerate(grid):
-        for column_index, node in enumerate(row):
+    for row_index in range(rows):
+        for column_index in range(columns):
             y, x = get_xy(row_index, column_index)
-            assert node
+            try:
+                node = grid[row_index][column_index]
+            except IndexError:
+                node = RG.Node(row_index, column_index, "lightgray")
             fill, text = node.color, node.text
             if fill == "":
                 fill = "None"
@@ -137,11 +140,12 @@ def build_svg(grid: RG.GridType) -> ET.Element:
                 width = rect_width * columns + 2 * v
             else:
                 width = rect_width + 2 * v
+            width = rect_width
+            print(f"{x = }, {y = }, {text = }, {width = }")
             sub_rect(x, y, text, fill, stroke, width)
-
     _y, _x = get_xy(rows, columns)
-    # svg_root.set("viewBox", f"0 0 {_x} {_y}")
-    svg_root.set("viewBox", f"1 1 {rect_width * columns + 2} {rect_height * rows + 2}")
+    svg_root.set("viewBox", f"0 0 {_x} {_y}")
+    # svg_root.set("viewBox", f"0 0 {rect_width * columns + 2} {rect_height * rows + 2}")
     return svg_root
 
 
