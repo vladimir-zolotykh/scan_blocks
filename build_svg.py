@@ -38,7 +38,7 @@ background = ET.Element(
         "fill": "lightgray",
     },
 )
-svg_root.insert(0, background)
+# svg_root.insert(0, background)
 rect_width: int = 36
 rect_height: int = 10
 font_size: int = 4
@@ -128,6 +128,8 @@ def build_svg(grid: RG.GridType) -> ET.Element:
             y, x = get_xy(row_index, column_index)
             try:
                 node = grid[row_index][column_index]
+                if node.color == "":
+                    node.color = "lightgray"
             except IndexError:
                 node = RG.Node(row_index, column_index, "lightgray")
             fill, text = node.color, node.text
@@ -141,10 +143,9 @@ def build_svg(grid: RG.GridType) -> ET.Element:
             else:
                 width = rect_width + 2 * v
             width = rect_width
-            print(f"{x = }, {y = }, {text = }, {width = }")
             sub_rect(x, y, text, fill, stroke, width)
-    _y, _x = get_xy(rows, columns)
-    svg_root.set("viewBox", f"0 0 {_x} {_y}")
+    _view_height, _view_width = get_xy(rows, columns)
+    svg_root.set("viewBox", f"0 0 {_view_width} {_view_height}")
     # svg_root.set("viewBox", f"0 0 {rect_width * columns + 2} {rect_height * rows + 2}")
     return svg_root
 
