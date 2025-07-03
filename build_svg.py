@@ -132,6 +132,7 @@ def build_svg(grid: RG.GridType) -> ET.Element:
             y, x = get_xy(row_index, column_index)
             try:
                 node = grid[row_index][column_index]
+                assert isinstance(node, RG.Node)
                 if node.color == "":
                     node.color = "lightgray"
             except IndexError:
