@@ -17,28 +17,32 @@ canvas_height = f"{screen_height // 3}px"
 view_width = 108
 view_height = 70
 
+_view_width = 112
+_view_height = 67
 svg_root = ET.Element(
     "svg",
     {
         "xmlns": "http://www.w3.org/2000/svg",
         "xmlns:xlink": "http://www.w3.org/1999/xlink",
         "xml:space": "preserve",
-        "width": canvas_width,
-        "height": canvas_height,
-        "viewBox": f"0 0 {view_width} {view_height}",
+        "width": str(_view_width * 3),
+        "height": str(_view_height * 3),
+        "viewBox": f"0 0 {_view_width} {_view_height}",
     },
 )
+_background_width = _view_width * 3
+_background_height = _view_height * 3
 background = ET.Element(
     "rect",
     {
         "x": "0px",
         "y": "0px",
-        "width": canvas_width,
-        "height": canvas_height,
+        "width": str(_background_width),
+        "height": str(_background_height),
         "fill": "lightgray",
     },
 )
-# svg_root.insert(0, background)
+svg_root.insert(0, background)
 rect_width: int = 36
 rect_height: int = 10
 font_size: int = 4
@@ -145,7 +149,7 @@ def build_svg(grid: RG.GridType) -> ET.Element:
             width = rect_width
             sub_rect(x, y, text, fill, stroke, width)
     _view_height, _view_width = get_xy(rows, columns)
-    svg_root.set("viewBox", f"0 0 {_view_width} {_view_height}")
+    # svg_root.set("viewBox", f"0 0 {_view_width} {_view_height}")
     # svg_root.set("viewBox", f"0 0 {rect_width * columns + 2} {rect_height * rows + 2}")
     return svg_root
 
