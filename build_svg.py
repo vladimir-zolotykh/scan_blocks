@@ -17,8 +17,8 @@ canvas_height = f"{screen_height // 3}px"
 view_width = 108
 view_height = 70
 
-_view_width = 112
-_view_height = 67
+_view_width = 114
+_view_height = 84
 svg_root = ET.Element(
     "svg",
     {
@@ -93,18 +93,26 @@ def sub_rect(
     ).text = text
 
 
-def get_y(row: int, v: int = stroke_thickness, h: int = rect_height) -> int:
-    if row == 0:
-        return v
-    else:
-        return get_y(row - 1) + h + v
-
-
-def get_x(column: int, v: int = stroke_thickness, w: int = rect_width) -> int:
+def get1_x(column: int, v: int = stroke_thickness, w: int = rect_width) -> int:
     if column == 0:
         return v
     else:
-        return get_x(column - 1) + w + v
+        return get1_x(column - 1) + w + v + v
+
+
+def get2_x(column: int, v: int = stroke_thickness, w: int = rect_width) -> int:
+    return get1_x(column) + w + v
+
+
+def get1_y(row: int, v: int = stroke_thickness, h: int = rect_height) -> int:
+    if row == 0:
+        return v
+    else:
+        return get1_y(row - 1) + h + v + v
+
+
+def get2_y(row: int, v: int = stroke_thickness, h: int = rect_height) -> int:
+    return get1_y(row) + h + v
 
 
 def get_xy(
@@ -114,9 +122,19 @@ def get_xy(
     h: int = rect_height,
     w: int = rect_width,
 ) -> tuple[int, int]:
-    """Convert ROW, COLUMN (indexes) into coordinates (Y, X)"""
+    """Get top-left corner
 
-    return get_y(row, v, h), get_x(column, v, w)
+    Convert ROW, COLUMN to Y, X coordinates"""
+
+    return get1_y(row, v, h), get1_x(column, v, w)
+
+
+def get2_xy(row: int, column: int) -> tuple[int, int]:
+    """Get bottom-right corner
+
+    Convert ROW, COLUMN to Y, X coordinates"""
+
+    return get2_x(column), get2_y(row)
 
 
 def build_svg(grid: RG.GridType) -> ET.Element:
