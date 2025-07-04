@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
-import unittest
+import pytest
 from build_svg import get1_x, get1_y, get2_x, get2_y
 
 xy_table = (
@@ -26,23 +26,9 @@ xy_table = (
 )
 
 
-class TestGetXY(unittest.TestCase):
-    pass
-
-
-def make_test(row, col, x1_y1, x2_y2):
-    def test(self):
-        self.assertEqual((get1_x(col), get1_y(row)), x1_y1)
-        self.assertEqual((get2_x(col), get2_y(row)), x2_y2)
-
-    return test
-
-
-for row, col, x1_y1, x2_y2 in xy_table:
-    test_name = f"test_row{row}_col{col}"
-    test_func = make_test(row, col, x1_y1, x2_y2)
-    setattr(TestGetXY, test_name, test_func)
-
-
-if __name__ == "__main__":
-    unittest.main()
+@pytest.mark.parametrize(
+    "row, col, x1_y1, x2_y2", xy_table, ids=[f"row{r}_col{c}" for r, c, *_ in xy_table]
+)
+def test_get_xy(row, col, x1_y1, x2_y2):
+    assert (get1_x(col), get1_y(row)) == x1_y1
+    assert (get2_x(col), get2_y(row)) == x2_y2
