@@ -27,11 +27,21 @@ xy_table = (
 
 
 class TestGetXY(unittest.TestCase):
-    def test_3x6(self):
-        for tuple4 in xy_table:
-            row, col, x1_y1, x2_y2 = tuple4
-            self.assertEqual((get1_x(col), get1_y(row)), x1_y1)
-            self.assertEqual((get2_x(col), get2_y(row)), x2_y2)
+    pass
+
+
+def make_test(row, col, x1_y1, x2_y2):
+    def test(self):
+        self.assertEqual((get1_x(col), get1_y(row)), x1_y1)
+        self.assertEqual((get2_x(col), get2_y(row)), x2_y2)
+
+    return test
+
+
+for row, col, x1_y1, x2_y2 in xy_table:
+    test_name = f"test_row{row}_col{col}"
+    test_func = make_test(row, col, x1_y1, x2_y2)
+    setattr(TestGetXY, test_name, test_func)
 
 
 if __name__ == "__main__":
