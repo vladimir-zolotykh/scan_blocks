@@ -3,6 +3,7 @@
 # PYTHON_ARGCOMPLETE_OK
 import pytest
 from build_svg import get1_x, get1_y, get2_x, get2_y
+from build_svg import Point, rect_start, rect_end
 
 xy_table = (
     (0, 0, (1, 1), (38, 12)),
@@ -32,3 +33,11 @@ xy_table = (
 def test_get_xy(row, col, x1_y1, x2_y2):
     assert (get1_x(col), get1_y(row)) == x1_y1
     assert (get2_x(col), get2_y(row)) == x2_y2
+
+
+@pytest.mark.parametrize(
+    "row, col, xy1, xy2", xy_table, ids=[f"row{r}_col{c}" for r, c, *_ in xy_table]
+)
+def test_rect(row, col, xy1, xy2):
+    assert rect_start(col, row) == Point(*xy1)
+    assert rect_end(col, row) == Point(*xy2)
