@@ -165,9 +165,8 @@ def build_svg(grid: RG.GridType) -> ET.Element:
                 width = rect_width + 2 * v
             width = rect_width
             sub_rect(x, y, text, fill, stroke, width)
-    _view_width, _view_height = rect_start(columns, rows)
-    # svg_root.set("viewBox", f"0 0 {_view_width} {_view_height}")
-    # svg_root.set("viewBox", f"0 0 {rect_width * columns + 2} {rect_height * rows + 2}")
+    _view_width, _view_height = rect_end(columns, rows)
+    svg_root.set("viewBox", "0 0 115, 84")
     return svg_root
 
 
