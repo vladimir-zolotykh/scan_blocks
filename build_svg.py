@@ -102,7 +102,7 @@ def rect_start(column: int, row: int) -> Point:
 
     converts column, row to pixel"""
 
-    return Point(get1_x(column), get1_y(row))
+    return Point(_get1_x(column), _get1_y(row))
 
 
 def rect_end(column: int, row: int) -> Point:
@@ -110,51 +110,51 @@ def rect_end(column: int, row: int) -> Point:
 
     converts column, row to pixel"""
 
-    return Point(get2_x(column), get2_y(row))
+    return Point(_get2_x(column), _get2_y(row))
 
 
-def get1_x(column: int, v: int = stroke_thickness, w: int = rect_width) -> int:
+def _get1_x(column: int, v: int = stroke_thickness, w: int = rect_width) -> int:
     if column == 0:
         return v
     else:
-        return get1_x(column - 1) + w + v + v
+        return _get1_x(column - 1) + w + v + v
 
 
-def get2_x(column: int, v: int = stroke_thickness, w: int = rect_width) -> int:
-    return get1_x(column) + w + v
+def _get2_x(column: int, v: int = stroke_thickness, w: int = rect_width) -> int:
+    return _get1_x(column) + w + v
 
 
-def get1_y(row: int, v: int = stroke_thickness, h: int = rect_height) -> int:
+def _get1_y(row: int, v: int = stroke_thickness, h: int = rect_height) -> int:
     if row == 0:
         return v
     else:
-        return get1_y(row - 1) + h + v + v
+        return _get1_y(row - 1) + h + v + v
 
 
-def get2_y(row: int, v: int = stroke_thickness, h: int = rect_height) -> int:
-    return get1_y(row) + h + v
+def _get2_y(row: int, v: int = stroke_thickness, h: int = rect_height) -> int:
+    return _get1_y(row) + h + v
 
 
-def get_xy(
-    row: int,
-    column: int,
-    v: int = stroke_thickness,
-    h: int = rect_height,
-    w: int = rect_width,
-) -> tuple[int, int]:
-    """Get top-left corner
+# def get_xy(
+#     row: int,
+#     column: int,
+#     v: int = stroke_thickness,
+#     h: int = rect_height,
+#     w: int = rect_width,
+# ) -> tuple[int, int]:
+#     """Get top-left corner
 
-    Convert ROW, COLUMN to Y, X coordinates"""
+#     Convert ROW, COLUMN to Y, X coordinates"""
 
-    return get1_y(row, v, h), get1_x(column, v, w)
+#     return get1_y(row, v, h), get1_x(column, v, w)
 
 
-def get2_xy(row: int, column: int) -> tuple[int, int]:
-    """Get bottom-right corner
+# def get2_xy(row: int, column: int) -> tuple[int, int]:
+#     """Get bottom-right corner
 
-    Convert ROW, COLUMN to Y, X coordinates"""
+#     Convert ROW, COLUMN to Y, X coordinates"""
 
-    return get2_x(column), get2_y(row)
+#     return get2_x(column), get2_y(row)
 
 
 def build_svg(grid: RG.GridType) -> ET.Element:
@@ -167,7 +167,8 @@ def build_svg(grid: RG.GridType) -> ET.Element:
     node: Optional[RG.Node]
     for row_index in range(rows):
         for column_index in range(columns):
-            y, x = get_xy(row_index, column_index)
+            x, y = rect_start(column_index, row_index)
+            # y, x = get_xy(row_index, column_index)
             try:
                 node = grid[row_index][column_index]
                 assert isinstance(node, RG.Node)
@@ -187,7 +188,8 @@ def build_svg(grid: RG.GridType) -> ET.Element:
                 width = rect_width + 2 * v
             width = rect_width
             sub_rect(x, y, text, fill, stroke, width)
-    _view_height, _view_width = get_xy(rows, columns)
+    _view_width, _view_height = rect_start(columns, rows)
+    # _view_height, _view_width = get_xy(rows, columns)
     # svg_root.set("viewBox", f"0 0 {_view_width} {_view_height}")
     # svg_root.set("viewBox", f"0 0 {rect_width * columns + 2} {rect_height * rows + 2}")
     return svg_root
