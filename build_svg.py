@@ -135,35 +135,12 @@ def _get2_y(row: int, v: int = stroke_thickness, h: int = rect_height) -> int:
     return _get1_y(row) + h + v
 
 
-# def get_xy(
-#     row: int,
-#     column: int,
-#     v: int = stroke_thickness,
-#     h: int = rect_height,
-#     w: int = rect_width,
-# ) -> tuple[int, int]:
-#     """Get top-left corner
-
-#     Convert ROW, COLUMN to Y, X coordinates"""
-
-#     return get1_y(row, v, h), get1_x(column, v, w)
-
-
-# def get2_xy(row: int, column: int) -> tuple[int, int]:
-#     """Get bottom-right corner
-
-#     Convert ROW, COLUMN to Y, X coordinates"""
-
-#     return get2_x(column), get2_y(row)
-
-
 def build_svg(grid: RG.GridType) -> ET.Element:
     x: int = 0
     y: int = 0
     v: int = stroke_thickness
     width: int
     columns, rows = get_size(grid)
-    # row: list[Optional[RG.Node]]
     node: Optional[RG.Node]
     for row_index in range(rows):
         for column_index in range(columns):
@@ -189,7 +166,6 @@ def build_svg(grid: RG.GridType) -> ET.Element:
             width = rect_width
             sub_rect(x, y, text, fill, stroke, width)
     _view_width, _view_height = rect_start(columns, rows)
-    # _view_height, _view_width = get_xy(rows, columns)
     # svg_root.set("viewBox", f"0 0 {_view_width} {_view_height}")
     # svg_root.set("viewBox", f"0 0 {rect_width * columns + 2} {rect_height * rows + 2}")
     return svg_root
