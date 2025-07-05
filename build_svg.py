@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
-import sys
-from typing import Optional
+from typing import NamedTuple, Optional
 import xml.etree.ElementTree as ET
 import glob
 import argparse
@@ -91,6 +90,27 @@ def sub_rect(
             "font-size": str(font_size),
         },
     ).text = text
+
+
+class Point(NamedTuple):
+    x: int
+    y: int
+
+
+def rect_start(column: int, row: int) -> Point:
+    """Return top-left corner of rectangle
+
+    converts column, row to pixel"""
+
+    return Point(get1_x(column), get1_y(row))
+
+
+def rect_end(column: int, row: int) -> Point:
+    """Return bottom-right corner (next to it) of rectangle
+
+    converts column, row to pixel"""
+
+    return Point(get2_x(column), get2_y(row))
 
 
 def get1_x(column: int, v: int = stroke_thickness, w: int = rect_width) -> int:
