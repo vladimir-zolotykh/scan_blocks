@@ -16,32 +16,35 @@ canvas_height = f"{screen_height // 3}px"
 view_width = 108
 view_height = 70
 
-_view_width = 114
-_view_height = 84
-svg_root = ET.Element(
-    "svg",
-    {
-        "xmlns": "http://www.w3.org/2000/svg",
-        "xmlns:xlink": "http://www.w3.org/1999/xlink",
-        "xml:space": "preserve",
-        "width": str(_view_width * 3),
-        "height": str(_view_height * 3),
-        "viewBox": f"0 0 {_view_width} {_view_height}",
-    },
-)
-_background_width = _view_width * 3
-_background_height = _view_height * 3
-background = ET.Element(
-    "rect",
-    {
-        "x": "0px",
-        "y": "0px",
-        "width": str(_background_width),
-        "height": str(_background_height),
-        "fill": "lightgray",
-    },
-)
-svg_root.insert(0, background)
+
+def init_svg_root(
+    view_width: int = 114, view_height: int = 84, factor: int = 3
+) -> ET.Element:
+    svg_root = ET.Element(
+        "svg",
+        {
+            "xmlns": "http://www.w3.org/2000/svg",
+            "xmlns:xlink": "http://www.w3.org/1999/xlink",
+            "xml:space": "preserve",
+            "width": str(view_width * factor),
+            "height": str(view_height * factor),
+            "viewBox": f"0 0 {view_width} {view_height}",
+        },
+    )
+    background = ET.Element(
+        "rect",
+        {
+            "x": "0px",
+            "y": "0px",
+            "width": str(view_width * factor),
+            "height": str(view_height * factor),
+            "fill": "lightgray",
+        },
+    )
+    svg_root.insert(0, background)
+    return svg_root
+
+
 rect_width: int = 36
 rect_height: int = 10
 font_size: int = 4
@@ -61,6 +64,7 @@ def get_size(grid: RG.GridType) -> tuple[int, int]:
 
 
 def sub_rect(
+    svg_root: ET.Element,
     x: int,
     y: int,
     text: str,
@@ -141,6 +145,7 @@ def build_svg(grid: RG.GridType) -> ET.Element:
     v: int = stroke_thickness
     width: int
     columns, rows = get_size(grid)
+    svg_root: ET.Element = init_svg_root(columns * 38, rows * 12, 3)
     node: Optional[RG.Node]
     for row_index in range(rows):
         for column_index in range(columns):
@@ -164,9 +169,9 @@ def build_svg(grid: RG.GridType) -> ET.Element:
             else:
                 width = rect_width + 2 * v
             width = rect_width
-            sub_rect(x, y, text, fill, stroke, width)
-    _view_width, _view_height = rect_end(columns, rows)
-    svg_root.set("viewBox", "0 0 115, 84")
+            sub_rect(svg_root, x, y, text, fill, stroke, width)
+    # _view_width, _view_height = rect_end(columns, rows)
+    # svg_root.set("viewBox", "0 0 115, 84")
     return svg_root
 
 
@@ -186,8 +191,8 @@ if __name__ == "__main__":
         buf: str = f.read()
         block = RS.parse_block(buf, 0, RS.Cell(0, 0))[0]
     grid: RG.GridType = RG.build_grid(block, [[]], RS.Cell(0, 0))[0]
-    build_svg(grid)
-    tree = ET.ElementTree(svg_root)
+    # build_svg(grid)
+    tree = ET.ElementTree(build_svg(grid))
     with open("message.svg", "w", encoding="utf-8") as f:
         f.write('<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n')
         f.write('<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"\n')
