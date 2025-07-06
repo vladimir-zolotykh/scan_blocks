@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # PYTHON_ARGCOMPLETE_OK
+import os
 import subprocess
 import unittest
 
@@ -15,6 +16,7 @@ file_str = """\
 class TestBuildSVG(unittest.TestCase):
     def test_file(self):
         self.maxDiff = None
+        os.remove("message.svg")
         subprocess.run(["python", "build_svg.py", "message.blk"])
         with open("message.svg") as f:
             s = f.read()
