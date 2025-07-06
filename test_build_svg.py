@@ -5,7 +5,7 @@ import os
 from subprocess import run, Popen, PIPE
 
 
-xml_pretty = b"""\
+xml_pretty = """\
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" width="342" height="216" viewBox="0 0 114 72">
@@ -54,4 +54,4 @@ def test_file():
     os.remove("message.svg")
     run(["python", "build_svg.py", "message.blk"], check=True)
     with Popen(["xmllint", "--format", "message.svg"], stdout=PIPE) as p:
-        assert p.stdout.read() == xml_pretty
+        assert p.stdout.read().decode("utf-8") == xml_pretty
