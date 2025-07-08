@@ -102,7 +102,10 @@ def rect_start(column: int, row: int) -> Point:
 
     converts column, row to pixel"""
 
-    return Point(_get1_x(column), _get1_y(row))
+    return Point(
+        _get1_x(column, stroke_thickness, rect_width),
+        _get1_y(row, stroke_thickness, rect_height),
+    )
 
 
 def rect_end(column: int, row: int) -> Point:
@@ -110,7 +113,10 @@ def rect_end(column: int, row: int) -> Point:
 
     converts column, row to pixel"""
 
-    return Point(_get2_x(column), _get2_y(row))
+    return Point(
+        _get2_x(column, stroke_thickness, rect_width),
+        _get2_y(row, stroke_thickness, rect_height),
+    )
 
 
 def _get1_x(
