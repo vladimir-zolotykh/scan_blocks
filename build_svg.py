@@ -9,12 +9,13 @@ import argcomplete
 import run_scan as RS
 import run_grid as RG
 
-screen_width = 1280
-screen_height = 1024
-canvas_width = f"{screen_width // 3}px"
-canvas_height = f"{screen_height // 3}px"
-view_width = 108
-view_height = 70
+# screen_width = 1280
+# screen_height = 1024
+rect_width: int = 36
+rect_height: int = 10
+font_size: int = 4
+x_spacing: int = rect_width
+stroke_thickness: int = 1
 
 
 def init_svg_root(
@@ -45,13 +46,6 @@ def init_svg_root(
     return svg_root
 
 
-rect_width: int = 36
-rect_height: int = 10
-font_size: int = 4
-x_spacing: int = 36
-stroke_thickness = 1
-
-
 def get_size(grid: RG.GridType) -> tuple[int, int]:
     """Return size (columns, rows) of `grid'"""
 
@@ -70,8 +64,10 @@ def sub_rect(
     text: str,
     fill: str = "None",
     stroke: str = "black",
-    width: int = rect_width,
+    width: Optional[int] = rect_width,
 ) -> None:
+    if width is None:
+        width = rect_width
     ET.SubElement(
         svg_root,
         "rect",
@@ -117,25 +113,49 @@ def rect_end(column: int, row: int) -> Point:
     return Point(_get2_x(column), _get2_y(row))
 
 
-def _get1_x(column: int, v: int = stroke_thickness, w: int = rect_width) -> int:
+def _get1_x(
+    column: int, v: Optional[int] = stroke_thickness, w: Optional[int] = rect_width
+) -> int:
+    if v is None:
+        v = stroke_thickness
+    if w is None:
+        w = rect_width
     if column == 0:
         return v
     else:
         return _get1_x(column - 1) + w + v + v
 
 
-def _get2_x(column: int, v: int = stroke_thickness, w: int = rect_width) -> int:
+def _get2_x(
+    column: int, v: Optional[int] = stroke_thickness, w: Optional[int] = rect_width
+) -> int:
+    if v is None:
+        v = stroke_thickness
+    if w is None:
+        w = rect_width
     return _get1_x(column) + w + v
 
 
-def _get1_y(row: int, v: int = stroke_thickness, h: int = rect_height) -> int:
+def _get1_y(
+    row: int, v: Optional[int] = stroke_thickness, h: Optional[int] = rect_height
+) -> int:
+    if v is None:
+        v = stroke_thickness
+    if h is None:
+        h = rect_width
     if row == 0:
         return v
     else:
         return _get1_y(row - 1) + h + v + v
 
 
-def _get2_y(row: int, v: int = stroke_thickness, h: int = rect_height) -> int:
+def _get2_y(
+    row: int, v: Optional[int] = stroke_thickness, h: Optional[int] = rect_height
+) -> int:
+    if v is None:
+        v = stroke_thickness
+    if h is None:
+        h = rect_width
     return _get1_y(row) + h + v
 
 
