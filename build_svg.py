@@ -118,6 +118,20 @@ def rect_end(column: int, row: int) -> Point:
     )
 
 
+def colrow_xy(col: int, row: int, rect_end: bool = False) -> Point:
+    """Convert COL , ROW to X, Y (pixel)"""
+
+    v: int = stroke_thickness
+    _width = rect_width + 2 * v
+    _height = rect_height + 2 * v
+    x = col * _width + v
+    y = row * _height + v
+    if rect_end:
+        x += rect_width + v
+        y += rect_height + v
+    return Point(x, y)
+
+
 def _get1_x(
     column: int, v: Optional[int] = stroke_thickness, w: Optional[int] = rect_width
 ) -> int:
@@ -174,7 +188,9 @@ def build_svg(grid: RG.GridType) -> ET.Element:
     node: Optional[RG.Node]
     for row_index in range(rows):
         for column_index in range(columns):
-            x, y = rect_start(column_index, row_index)
+            x, y = colrow_xy(column_index, row_index)
+            _x, _y = rect_start(column_index, row_index)
+            assert (x, y) == (_x, _y)
             # y, x = get_xy(row_index, column_index)
             try:
                 node = grid[row_index][column_index]
