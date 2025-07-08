@@ -14,7 +14,6 @@ import run_grid as RG
 rect_width: int = 36
 rect_height: int = 10
 font_size: int = 4
-x_spacing: int = rect_width
 stroke_thickness: int = 1
 
 
