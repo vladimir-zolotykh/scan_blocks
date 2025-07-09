@@ -45,7 +45,12 @@ def init_svg_root(
     return svg_root
 
 
-def get_size(grid: RG.GridType) -> tuple[int, int]:
+class Size(NamedTuple):
+    columns: int
+    rows: int
+
+
+def get_size(grid: RG.GridType) -> Size:
     """Return size (columns, rows) of `grid'"""
 
     rows: int = len(grid)
@@ -53,7 +58,7 @@ def get_size(grid: RG.GridType) -> tuple[int, int]:
     for row in grid:
         if columns < len(row):
             columns = len(row)
-    return columns, rows
+    return Size(columns, rows)
 
 
 def sub_rect(
@@ -183,7 +188,8 @@ def build_svg(grid: RG.GridType) -> ET.Element:
     y: int = 0
     v: int = stroke_thickness
     width: int
-    columns, rows = get_size(grid)
+    size: Size = get_size(grid)
+    columns, rows = size  # get_size(grid)
     svg_root: ET.Element = init_svg_root(columns * 38, rows * 12, 3)
     node: Optional[RG.Node]
     for row_index in range(rows):
