@@ -183,6 +183,36 @@ def _get2_y(
     return _get1_y(row) + h + v
 
 
+def sort_rows(grid: RG.GridType) -> None:
+    """Rearrange rows in place with :center
+
+    I assume that a row has only one :center Node."""
+
+    columns, rows = get_size(grid)
+    for row_index in range(rows):
+        row: list[RG.Node] = grid[row_index]
+
+        def find_center(row: list[RG.Node]) -> Optional[RG.Node]:
+            for node in row:
+                if ":center" in node.tags:
+                    return node
+            return None
+
+        if node := find_center(row):
+            mid = columns // 2
+            new_row: list[RG.Node] = []
+            for column_index in range(mid):
+                new_row.append(
+                    RG.Node(column=column_index, row=row_index, color="lightgray")
+                )
+            new_row.append(node)
+            for column_index in range(len(row) - mid):
+                new_row.append(
+                    RG.Node(column=column_index, row=row_index, color="lightgray")
+                )
+            grid[row_index] = new_row
+
+
 def build_svg(grid: RG.GridType) -> ET.Element:
     x: int = 0
     y: int = 0
@@ -192,6 +222,7 @@ def build_svg(grid: RG.GridType) -> ET.Element:
     columns, rows = size  # get_size(grid)
     svg_root: ET.Element = init_svg_root(columns * 38, rows * 12, 3)
     node: Optional[RG.Node]
+    sort_rows(grid)
     for row_index in range(rows):
         for column_index in range(columns):
             x, y = colrow_xy(column_index, row_index)

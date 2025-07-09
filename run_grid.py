@@ -29,7 +29,8 @@ class Node:
         return f"[{self.row}, {self.column}] {self.color!r}: {self.text!r}"
 
 
-GridType = list[list[Optional[Node]]]
+# GridType = list[list[Optional[Node]]]
+GridType = list[list[Node]]
 
 
 def build_grid(
