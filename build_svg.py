@@ -202,9 +202,11 @@ def sort_rows(grid: RG.GridType) -> None:
                 return RG.Node(column=c, row=r, color="lightgray")
 
             grid[row_index] = (
-                (lightgray_node(col, row_index) for col in range(mid)),
+                *list(lightgray_node(col, row_index) for col in range(mid)),
                 centered_node,
-                (lightgray_node(col, row_index) for col in range(mid + 1, columns)),
+                *list(
+                    lightgray_node(col, row_index) for col in range(mid + 1, columns)
+                ),
             )
 
 
