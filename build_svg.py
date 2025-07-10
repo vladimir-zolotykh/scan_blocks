@@ -192,25 +192,20 @@ def sort_rows(grid: RG.GridType) -> None:
     for row_index in range(rows):
         row: list[RG.Node] = grid[row_index]
 
-        def find_center(row: list[RG.Node]) -> Optional[RG.Node]:
-            for node in row:
-                if ":center" in node.tags:
-                    return node
-            return None
-
-        if node := find_center(row):
+        centered_node: Optional[RG.Node] = next(
+            (node for node in row if ":center" in node.tags), None
+        )
+        if centered_node:
             mid = columns // 2
-            new_row: list[RG.Node] = []
-            for column_index in range(mid):
-                new_row.append(
-                    RG.Node(column=column_index, row=row_index, color="lightgray")
-                )
-            new_row.append(node)
-            for column_index in range(len(row) - mid):
-                new_row.append(
-                    RG.Node(column=column_index, row=row_index, color="lightgray")
-                )
-            grid[row_index] = new_row
+
+            def lightgray_node(c: int, r: int) -> RG.Node:
+                return RG.Node(column=c, row=r, color="lightgray")
+
+            grid[row_index] = (
+                (lightgray_node(col, row_index) for col in range(mid)),
+                centered_node,
+                (lightgray_node(col, row_index) for col in range(mid + 1, columns)),
+            )
 
 
 def build_svg(grid: RG.GridType) -> ET.Element:
